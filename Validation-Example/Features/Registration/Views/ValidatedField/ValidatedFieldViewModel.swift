@@ -8,9 +8,9 @@
 import Foundation
 import Combine
 
-class ValidatedFieldViewModel: ObservableObject {
+class ValidatedFieldViewModel<V: Validator>: ObservableObject {
     @Published var value: String = ""
-    @Published var validationResult: ValidationResult = .valid
+    @Published var errorMessage: String?
     @Published var showError: Bool = false
     
     let title: String
@@ -19,7 +19,7 @@ class ValidatedFieldViewModel: ObservableObject {
     
     let isSecure: Bool
     
-    private let validator: Validator
+    private let validator: V
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
@@ -28,7 +28,7 @@ class ValidatedFieldViewModel: ObservableObject {
          placeholder: String,
          instructions: String? = nil,
          isSecure: Bool = false,
-         validator: Validator) {
+         validator: V) {
         self.title = title
         self.placeholder = placeholder
         self.instructions = instructions
@@ -54,7 +54,7 @@ class ValidatedFieldViewModel: ObservableObject {
                 if !newValue.isEmpty {
                     self.validate()
                 } else {
-                    self.validationResult = .valid
+                    self.errorMessage = nil
                     self.showError = false
                 }
             }
@@ -64,7 +64,14 @@ class ValidatedFieldViewModel: ObservableObject {
     // MARK: - Validation
     
     func validate() {
-        validationResult = validator.validate(value)
-        showError = !validationResult.isValid
+        do {
+            try validator.validate(value)
+            errorMessage = nil
+            showError = false
+        } catch {
+            // error is guaranteed to be V.ValidationError which conforms to LocalizedError
+            errorMessage = error.localizedDescription
+            showError = true
+        }
     }
 }

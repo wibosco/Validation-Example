@@ -28,12 +28,12 @@ class RegistrationViewModel: ObservableObject {
     
     init() {
         // Combine validation from both fields
-        emailAddressViewModel.$validationResult
-            .combineLatest(emailAddressViewModel.$value, passwordViewModel.$validationResult, passwordViewModel.$value)
-            .map { usernameResult, usernameValue, passwordResult, passwordValue in
-                // Both fields must be valid AND not empty
-                usernameResult.isValid && !usernameValue.isEmpty &&
-                passwordResult.isValid && !passwordValue.isEmpty
+        emailAddressViewModel.$errorMessage
+            .combineLatest(emailAddressViewModel.$value, passwordViewModel.$errorMessage, passwordViewModel.$value)
+            .map { emailError, emailValue, passwordError, passwordValue in
+                // Both fields must have no errors AND not be empty
+                emailError == nil && !emailValue.isEmpty &&
+                passwordError == nil && !passwordValue.isEmpty
             }
             .assign(to: &$isFormValid)
     }

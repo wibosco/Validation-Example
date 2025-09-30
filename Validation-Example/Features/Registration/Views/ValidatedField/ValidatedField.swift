@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct ValidatedField: View {
-    @ObservedObject var viewModel: ValidatedFieldViewModel
+struct ValidatedField<V: Validator>: View {
+    @ObservedObject var viewModel: ValidatedFieldViewModel<V>
     
     // MARK: - Body
     
@@ -42,7 +42,7 @@ struct ValidatedField: View {
                 viewModel.validate()
             }
             
-            if viewModel.showError, let error = viewModel.validationResult.errorMessage {
+            if viewModel.showError, let error = viewModel.errorMessage {
                 HStack(alignment: .top,
                        spacing: 4) {
                     Image(systemName: "exclamationmark.circle.fill")
