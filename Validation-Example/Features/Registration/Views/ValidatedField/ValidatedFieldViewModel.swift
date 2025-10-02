@@ -8,10 +8,13 @@
 import Foundation
 import Combine
 
-class ValidatedFieldViewModel<V: Validator>: ObservableObject {
+class ValidatedFieldViewModel<V: Validator, S: Scheduler>: ObservableObject {
     @Published var value: String = ""
-    @Published var errorMessage: String?
-    @Published var showError: Bool = false
+    @Published var error: V.ValidationError?
+    
+    var showError: Bool {
+        error != nil
+    }
     
     let title: String
     let placeholder: String
@@ -20,6 +23,7 @@ class ValidatedFieldViewModel<V: Validator>: ObservableObject {
     let isSecure: Bool
     
     private let validator: V
+    private let scheduler: S
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
@@ -28,7 +32,8 @@ class ValidatedFieldViewModel<V: Validator>: ObservableObject {
          placeholder: String,
          instructions: String? = nil,
          isSecure: Bool = false,
-         validator: V) {
+         validator: V,
+         scheduler: S = RunLoop.main) {
         self.title = title
         self.placeholder = placeholder
         self.instructions = instructions
@@ -36,6 +41,7 @@ class ValidatedFieldViewModel<V: Validator>: ObservableObject {
         self.isSecure = isSecure
         
         self.validator = validator
+        self.scheduler = scheduler
         
         setupDebouncingValidation()
     }
@@ -45,17 +51,16 @@ class ValidatedFieldViewModel<V: Validator>: ObservableObject {
     private func setupDebouncingValidation() {
         $value
             .debounce(for: .milliseconds(500),
-                      scheduler: RunLoop.main)
+                      scheduler: scheduler)
             .sink { [weak self] newValue in
                 guard let self = self else {
                     return
                 }
                 
                 if !newValue.isEmpty {
-                    self.validate()
+                    self.validate(newValue) // Need to pass `newValue` as value won't yet have been updated
                 } else {
-                    self.errorMessage = nil
-                    self.showError = false
+                    self.error = nil
                 }
             }
             .store(in: &cancellables)
@@ -63,15 +68,12 @@ class ValidatedFieldViewModel<V: Validator>: ObservableObject {
     
     // MARK: - Validation
     
-    func validate() {
+    private func validate(_ value: String) {
         do {
             try validator.validate(value)
-            errorMessage = nil
-            showError = false
+            error = nil
         } catch {
-            // error is guaranteed to be V.ValidationError which conforms to LocalizedError
-            errorMessage = error.localizedDescription
-            showError = true
+            self.error = error
         }
     }
 }
