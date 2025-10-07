@@ -6,18 +6,21 @@
 //
 
 import Testing
+import Foundation
 import Combine
+import CombineSchedulers
 
 @testable import Validation_Example
 
 struct ValidatedFieldViewModelTests {
-    
     var validator: StubValidator<FakeLocalizedError>!
+    var scheduler: TestSchedulerOf<RunLoop>!
     
     // MARK: - Init
     
     init() {
         validator = StubValidator()
+        scheduler = RunLoop.test
     }
 
     // MARK: - Tests
@@ -31,7 +34,7 @@ struct ValidatedFieldViewModelTests {
                                           instructions: "test_instructions",
                                           isSecure: true,
                                           validator: validator,
-                                          scheduler: ImmediateScheduler.shared)
+                                          scheduler: scheduler.eraseToAnyScheduler())
 
         #expect(sut.title == title)
     }
@@ -45,7 +48,7 @@ struct ValidatedFieldViewModelTests {
                                           instructions: "test_instructions",
                                           isSecure: true,
                                           validator: validator,
-                                          scheduler: ImmediateScheduler.shared)
+                                          scheduler: scheduler.eraseToAnyScheduler())
 
         #expect(sut.placeholder == placeholder)
     }
@@ -59,7 +62,7 @@ struct ValidatedFieldViewModelTests {
                                           instructions: "test_instructions",
                                           isSecure: isSecure,
                                           validator: validator,
-                                          scheduler: ImmediateScheduler.shared)
+                                          scheduler: scheduler.eraseToAnyScheduler())
 
         #expect(sut.isSecure == isSecure)
     }
@@ -73,7 +76,7 @@ struct ValidatedFieldViewModelTests {
                                           instructions: instructions,
                                           isSecure: true,
                                           validator: validator,
-                                          scheduler: ImmediateScheduler.shared)
+                                          scheduler: scheduler.eraseToAnyScheduler())
 
         #expect(sut.instructions == instructions)
     }
@@ -85,9 +88,31 @@ struct ValidatedFieldViewModelTests {
                                           instructions: "test_instructions",
                                           isSecure: true,
                                           validator: validator,
-                                          scheduler: ImmediateScheduler.shared)
+                                          scheduler: scheduler.eraseToAnyScheduler())
         let value = "test_value"
         sut.value = value
+        
+        await scheduler.advance(by: .seconds(1))
+        
+        #expect(validator.events == [.validate(value)])
+    }
+    
+    @Test("Given a view model, when value changes, then validation should only happen after debouncing of 500 milliseconds")
+    func debouncing() async throws {
+        let sut = ValidatedFieldViewModel(title: "test_title",
+                                          placeholder: "test_placeholder",
+                                          instructions: "test_instructions",
+                                          isSecure: true,
+                                          validator: validator,
+                                          scheduler: scheduler.eraseToAnyScheduler())
+        let value = "test_value"
+        sut.value = value
+        
+        await scheduler.advance(by: .milliseconds(999))
+        
+        #expect(validator.events.isEmpty)
+        
+        await scheduler.advance(by: .milliseconds(1))
         
         #expect(validator.events == [.validate(value)])
     }
@@ -99,13 +124,15 @@ struct ValidatedFieldViewModelTests {
                                           instructions: "test_instructions",
                                           isSecure: true,
                                           validator: validator,
-                                          scheduler: ImmediateScheduler.shared)
+                                          scheduler: scheduler.eraseToAnyScheduler())
         
         validator.validationErrorResponse = nil
         
         sut.value = "test_value"
         
-        #expect(sut.error == nil)
+        await scheduler.advance(by: .seconds(1))
+        
+        #expect(sut.state == .valid)
     }
     
     @Test("Given a view model, when validation fails, then `error` should be set with the validation error thrown")
@@ -115,41 +142,15 @@ struct ValidatedFieldViewModelTests {
                                           instructions: "test_instructions",
                                           isSecure: true,
                                           validator: validator,
-                                          scheduler: ImmediateScheduler.shared)
+                                          scheduler: scheduler.eraseToAnyScheduler())
         
         let error = FakeLocalizedError.test
         validator.validationErrorResponse = error
         
         sut.value = "test_value"
         
-        #expect(sut.error == error)
-    }
-    
-    @Test("Given a view model, when error is nil, then showError returns false")
-    func showErrorFalse() async throws {
-        let sut = ValidatedFieldViewModel(title: "test_title",
-                                          placeholder: "test_placeholder",
-                                          instructions: "test_instructions",
-                                          isSecure: true,
-                                          validator: validator,
-                                          scheduler: ImmediateScheduler.shared)
+        await scheduler.advance(by: .seconds(1))
         
-        sut.error = nil
-        
-        #expect(sut.showError == false)
-    }
-    
-    @Test("Given a view model, when error is not nil, then showError returns true")
-    func showErrorTrue() async throws {
-        let sut = ValidatedFieldViewModel(title: "test_title",
-                                          placeholder: "test_placeholder",
-                                          instructions: "test_instructions",
-                                          isSecure: true,
-                                          validator: validator,
-                                          scheduler: ImmediateScheduler.shared)
-        
-        sut.error = FakeLocalizedError.test
-        
-        #expect(sut.showError == true)
+        #expect(sut.state == .invalid(error))
     }
 }

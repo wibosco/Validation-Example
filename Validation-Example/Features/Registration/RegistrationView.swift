@@ -19,7 +19,6 @@ struct RegistrationView: View {
         NavigationView {
             VStack(spacing: 20) {
                 ValidatedField(viewModel: viewModel.emailAddressViewModel)
-                
                 ValidatedField(viewModel: viewModel.passwordViewModel)
                 
                 Spacer()
@@ -27,7 +26,7 @@ struct RegistrationView: View {
                 Button("Submit") {
                     showSubmissionAlert = true
                 }
-                .disabled(!viewModel.isFormValid)
+                .disabled(!viewModel.canSubmit)
             }
             .padding()
             .navigationTitle("Registration")

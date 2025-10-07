@@ -7,14 +7,33 @@
 
 import Foundation
 import Combine
+import CombineSchedulers
 
-class ValidatedFieldViewModel<V: Validator, S: Scheduler>: ObservableObject {
-    @Published var value: String = ""
-    @Published var error: V.ValidationError?
-    
-    var showError: Bool {
-        error != nil
+class ValidatedFieldViewModel<V: Validator>: ObservableObject {
+    enum ValidatedFieldState: Equatable {
+        case empty
+        case valid
+        case invalid(V.ValidationError)
+        
+        var isValid: Bool {
+            guard case .valid = self else {
+                return false
+            }
+            
+            return true
+        }
+        
+        var isInvalid: Bool {
+            guard case .invalid(_) = self else {
+                return false
+            }
+            
+            return true
+        }
     }
+    
+    @Published var value: String = ""
+    @Published var state: ValidatedFieldState = .empty
     
     let title: String
     let placeholder: String
@@ -23,7 +42,7 @@ class ValidatedFieldViewModel<V: Validator, S: Scheduler>: ObservableObject {
     let isSecure: Bool
     
     private let validator: V
-    private let scheduler: S
+    private let scheduler: AnySchedulerOf<RunLoop>
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
@@ -33,7 +52,7 @@ class ValidatedFieldViewModel<V: Validator, S: Scheduler>: ObservableObject {
          instructions: String? = nil,
          isSecure: Bool = false,
          validator: V,
-         scheduler: S = RunLoop.main) {
+         scheduler: AnySchedulerOf<RunLoop> = .main) {
         self.title = title
         self.placeholder = placeholder
         self.instructions = instructions
@@ -43,25 +62,24 @@ class ValidatedFieldViewModel<V: Validator, S: Scheduler>: ObservableObject {
         self.validator = validator
         self.scheduler = scheduler
         
-        setupDebouncingValidation()
+        setupAutomaticValidation()
     }
     
     // MARK: - Debouncing
     
-    private func setupDebouncingValidation() {
+    private func setupAutomaticValidation() {
         $value
-            .debounce(for: .milliseconds(500),
+            .debounce(for: .seconds(1),
                       scheduler: scheduler)
+            .removeDuplicates()
+            .filter { !$0.isEmpty }
             .sink { [weak self] newValue in
-                guard let self = self else {
+                guard !newValue.isEmpty else {
+                    self?.state = .empty
                     return
                 }
                 
-                if !newValue.isEmpty {
-                    self.validate(newValue) // Need to pass `newValue` as value won't yet have been updated
-                } else {
-                    self.error = nil
-                }
+                self?.validate(newValue) // Need to pass `newValue` as `value` won't yet have been updated
             }
             .store(in: &cancellables)
     }
@@ -71,9 +89,9 @@ class ValidatedFieldViewModel<V: Validator, S: Scheduler>: ObservableObject {
     private func validate(_ value: String) {
         do {
             try validator.validate(value)
-            error = nil
+            state = .valid
         } catch {
-            self.error = error
+            state = .invalid(error)
         }
     }
 }

@@ -9,7 +9,7 @@ import Foundation
 
 @testable import Validation_Example
 
-final class StubValidator<ValidationError: LocalizedError>: Validator {
+final class StubValidator<ValidationError: LocalizedError & Equatable>: Validator {
     enum Event: Equatable {
         case validate(String)
     }

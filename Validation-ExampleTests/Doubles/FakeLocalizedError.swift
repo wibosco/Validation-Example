@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum FakeLocalizedError: LocalizedError {
+enum FakeLocalizedError: LocalizedError, Equatable {
     case test
     
     var errorDescription: String? {

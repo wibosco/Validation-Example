@@ -8,8 +8,8 @@
 import SwiftUI
 import Combine
 
-struct ValidatedField<V: Validator, S: Scheduler>: View {
-    @ObservedObject var viewModel: ValidatedFieldViewModel<V, S>
+struct ValidatedField<V: Validator>: View {
+    @ObservedObject var viewModel: ValidatedFieldViewModel<V>
     
     // MARK: - Body
     
@@ -37,10 +37,10 @@ struct ValidatedField<V: Validator, S: Scheduler>: View {
             .cornerRadius(8)
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(viewModel.showError ? Color.red : Color.clear, lineWidth: 2)
+                    .stroke(viewModel.state.isInvalid ? Color.red : Color.clear, lineWidth: 2)
             )
             
-            if let error = viewModel.error {
+            if case let .invalid(error) = viewModel.state {
                 HStack(alignment: .top,
                        spacing: 4) {
                     Image(systemName: "exclamationmark.circle.fill")
@@ -64,6 +64,6 @@ struct ValidatedField<V: Validator, S: Scheduler>: View {
                 .foregroundColor(.secondary)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: viewModel.showError)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.state.isInvalid)
     }
 }
