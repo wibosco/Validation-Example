@@ -7,11 +7,33 @@
 
 import Foundation
 import Combine
+import CombineSchedulers
 
-class ValidatedFieldViewModel: ObservableObject {
+class ValidatedFieldViewModel<V: Validator>: ObservableObject {
+    enum ValidatedFieldState: Equatable {
+        case empty
+        case valid
+        case invalid(V.ValidationError)
+        
+        var isValid: Bool {
+            guard case .valid = self else {
+                return false
+            }
+            
+            return true
+        }
+        
+        var isInvalid: Bool {
+            guard case .invalid(_) = self else {
+                return false
+            }
+            
+            return true
+        }
+    }
+    
     @Published var value: String = ""
-    @Published var validationResult: ValidationResult = .valid
-    @Published var showError: Bool = false
+    @Published var state: ValidatedFieldState = .empty
     
     let title: String
     let placeholder: String
@@ -19,7 +41,8 @@ class ValidatedFieldViewModel: ObservableObject {
     
     let isSecure: Bool
     
-    private let validator: Validator
+    private let validator: V
+    private let scheduler: AnySchedulerOf<RunLoop>
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Init
@@ -28,7 +51,8 @@ class ValidatedFieldViewModel: ObservableObject {
          placeholder: String,
          instructions: String? = nil,
          isSecure: Bool = false,
-         validator: Validator) {
+         validator: V,
+         scheduler: AnySchedulerOf<RunLoop> = .main) {
         self.title = title
         self.placeholder = placeholder
         self.instructions = instructions
@@ -36,35 +60,38 @@ class ValidatedFieldViewModel: ObservableObject {
         self.isSecure = isSecure
         
         self.validator = validator
+        self.scheduler = scheduler
         
-        setupDebouncingValidation()
+        setupAutomaticValidation()
     }
     
     // MARK: - Debouncing
     
-    private func setupDebouncingValidation() {
+    private func setupAutomaticValidation() {
         $value
-            .debounce(for: .milliseconds(500),
-                      scheduler: RunLoop.main)
+            .debounce(for: .seconds(1),
+                      scheduler: scheduler)
+            .removeDuplicates()
+            .filter { !$0.isEmpty }
             .sink { [weak self] newValue in
-                guard let self = self else {
+                guard !newValue.isEmpty else {
+                    self?.state = .empty
                     return
                 }
                 
-                if !newValue.isEmpty {
-                    self.validate()
-                } else {
-                    self.validationResult = .valid
-                    self.showError = false
-                }
+                self?.validate(newValue) // Need to pass `newValue` as `value` won't yet have been updated
             }
             .store(in: &cancellables)
     }
     
     // MARK: - Validation
     
-    func validate() {
-        validationResult = validator.validate(value)
-        showError = !validationResult.isValid
+    private func validate(_ value: String) {
+        do {
+            try validator.validate(value)
+            state = .valid
+        } catch {
+            state = .invalid(error)
+        }
     }
 }

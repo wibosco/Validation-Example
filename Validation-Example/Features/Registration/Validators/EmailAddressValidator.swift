@@ -8,16 +8,30 @@
 
 import Foundation
 
-struct EmailAddressValidator: Validator {
+enum EmailValidationError: LocalizedError {
+    case empty
+    case invalidFormat
     
+    var errorDescription: String? {
+        switch self {
+        case .empty:
+            return "Email address cannot be empty"
+        case .invalidFormat:
+            return "Email domain format is invalid"
+        }
+    }
+}
+
+struct EmailAddressValidator: Validator {
+
     // MARK: - Validator
     
-    func validate(_ value: String) -> ValidationResult {
+    func validate(_ value: String) throws(EmailValidationError) {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
         
         // Check if empty
         if trimmedValue.isEmpty {
-            return .invalid("Email address cannot be empty")
+            throw EmailValidationError.empty
         }
         
         // Basic format check using regex
@@ -25,9 +39,7 @@ struct EmailAddressValidator: Validator {
         let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
         
         guard emailPredicate.evaluate(with: trimmedValue) else {
-            return .invalid("Email domain format is invalid")
+            throw EmailValidationError.invalidFormat
         }
-        
-        return .valid
     }
 }

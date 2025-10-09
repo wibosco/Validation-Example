@@ -6,44 +6,62 @@
 //
 import Foundation
 
+enum PasswordValidationError: LocalizedError {
+    case tooShort
+    case tooLong
+    case missingLowercase
+    case missingUppercase
+    case missingNumber
+    case missingSpecialCharacter
+    
+    var errorDescription: String? {
+        switch self {
+        case .tooShort:
+            return "Password must be at least 8 characters long"
+        case .tooLong:
+            return "Password must be at most 24 characters"
+        case .missingLowercase:
+            return "Password must contain at least one lowercase letter"
+        case .missingUppercase:
+            return "Password must contain at least one uppercase letter"
+        case .missingNumber:
+            return "Password must contain at least one number"
+        case .missingSpecialCharacter:
+            return "Password must contain at least one special character (&, _, -, @)"
+        }
+    }
+}
+
 struct PasswordValidator: Validator {
     
     // MARK: - Validator
     
-    func validate(_ value: String) -> ValidationResult {
-        // Check for min length
+    func validate(_ value: String) throws(PasswordValidationError) {
         guard value.count >= 8 else {
-            return .invalid("Password must be at least 8 characters long")
+            throw PasswordValidationError.tooShort
         }
         
-        // Check for max length
         guard value.count <= 24 else {
-            return .invalid("Password must be at most 24 characters")
+            throw PasswordValidationError.tooLong
         }
         
-        // Check for at least one lowercase letter
         guard value.contains(where: { $0.isLowercase }) else {
-            return .invalid("Password must contain at least one lowercase letter")
+            throw PasswordValidationError.missingLowercase
         }
         
-        // Check for at least one uppercase letter
         guard value.contains(where: { $0.isUppercase }) else {
-            return .invalid("Password must contain at least one uppercase letter")
+            throw PasswordValidationError.missingUppercase
         }
         
-        // Check for at least one number
         guard value.contains(where: { $0.isNumber }) else {
-            return .invalid("Password must contain at least one number")
+            throw PasswordValidationError.missingNumber
         }
         
-        // Check for at least one special character from the allowed set
         let allowedSpecialChars = CharacterSet(charactersIn: "&,_,-,@")
         let hasSpecialChar = value.unicodeScalars.contains { allowedSpecialChars.contains($0) }
         
         guard hasSpecialChar else {
-            return .invalid("Password must contain at least one special character (&, _, -, @)s")
+            throw PasswordValidationError.missingSpecialCharacter
         }
-        
-        return .valid
     }
 }

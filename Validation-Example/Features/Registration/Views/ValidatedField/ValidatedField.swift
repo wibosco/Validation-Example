@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import Combine
 
-struct ValidatedField: View {
-    @ObservedObject var viewModel: ValidatedFieldViewModel
+struct ValidatedField<V: Validator>: View {
+    @ObservedObject var viewModel: ValidatedFieldViewModel<V>
     
     // MARK: - Body
     
@@ -36,18 +37,15 @@ struct ValidatedField: View {
             .cornerRadius(8)
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(viewModel.showError ? Color.red : Color.clear, lineWidth: 2)
+                    .stroke(viewModel.state.isInvalid ? Color.red : Color.clear, lineWidth: 2)
             )
-            .onSubmit {
-                viewModel.validate()
-            }
             
-            if viewModel.showError, let error = viewModel.validationResult.errorMessage {
+            if case let .invalid(error) = viewModel.state {
                 HStack(alignment: .top,
                        spacing: 4) {
                     Image(systemName: "exclamationmark.circle.fill")
                         .font(.caption)
-                    Text(error)
+                    Text(error.localizedDescription)
                         .font(.caption)
                 }
                 .foregroundColor(.red)
@@ -66,6 +64,6 @@ struct ValidatedField: View {
                 .foregroundColor(.secondary)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: viewModel.showError)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.state.isInvalid)
     }
 }
