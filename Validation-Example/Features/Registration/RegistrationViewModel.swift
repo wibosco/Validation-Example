@@ -7,25 +7,32 @@
 //
 
 import Foundation
+import SwiftUI
 import Combine
+import CombineSchedulers
 
 class RegistrationViewModel: ObservableObject {
-    @Published private(set) var canSubmit = false
+    @Published private(set) var canSubmit: Bool = false
     
-    let emailAddressViewModel = ValidatedFieldViewModel(title: "Email Address",
-                                                        placeholder: "Enter email address",
-                                                        validator: EmailAddressValidator())
+    @Published var emailAddress: String = ""
+    @Published var password: String = ""
     
-    let passwordViewModel = ValidatedFieldViewModel(title: "Password",
-                                                    placeholder: "Enter password",
-                                                    instructions: "Password must: \n - Be between 8 and 24 characters in length. \n - Contain a lower case letter. \n - Contain an upper case letter. \n - Contain a specical symbol from: \"&, _, -, @\".",
-                                                    isSecure: true,
-                                                    validator: PasswordValidator())
+    @Published var emailAddressState: ValidatedState = .empty
+    @Published var passwordState: ValidatedState = .empty
     
     // MARK: - Init
     
-    init() {
-        Publishers.CombineLatest(emailAddressViewModel.$state, passwordViewModel.$state)
+    init(factory: DebouncedValidationPublisherFactory = DebouncedValidationPublisherFactory(scheduler: .main)) {
+        factory.createPublisher($emailAddress,
+                                validator: EmailAddressValidator())
+            .assign(to: &$emailAddressState)
+        
+        factory.createPublisher($password,
+                                validator: PasswordValidator())
+        .assign(to: &$passwordState)
+        
+        Publishers.CombineLatest($emailAddressState,
+                                 $passwordState)
         .map { emailAddressState, passwordState in
             emailAddressState.isValid &&
             passwordState.isValid

@@ -8,6 +8,6 @@
 import Foundation
 
 protocol Validator {
-    associatedtype ValidationError: LocalizedError & Equatable
+    associatedtype ValidationError: Error
     func validate(_ value: String) throws(ValidationError)
 }
