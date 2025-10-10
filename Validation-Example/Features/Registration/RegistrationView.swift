@@ -9,11 +9,8 @@
 import SwiftUI
 
 struct RegistrationView: View {
-    @StateObject var viewModel: RegistrationViewModel
-        
-//    @State private var text = ""
-//    @State private var isInvalid: ValidatedState = .empty
-    
+    @ObservedObject var viewModel: RegistrationViewModel
+
     // MARK: - Views
     
     var body: some View {
@@ -24,7 +21,6 @@ struct RegistrationView: View {
                     Text("Email Address")
                         .styleAsInputFieldTitle()
 
-                    
                     TextField("Enter your email address",
                               text: $viewModel.emailAddress)
                         .textInputAutocapitalization(.never)
@@ -57,19 +53,17 @@ struct RegistrationView: View {
                 Spacer()
                 
                 Button("Submit") {
-                    // Omitted submit code
+                    if viewModel.canSubmit {
+                        // Omitted submission code
+                    } else {
+                        // Omitted alert code
+                    }
                 }
-                .disabled(!viewModel.canSubmit)
             }
             .padding()
             .navigationTitle("Registration")
         }
     }
-}
-
-#Preview {
-    let viewModel = RegistrationViewModel()
-    RegistrationView(viewModel: viewModel)
 }
 
 extension View {
@@ -89,21 +83,18 @@ extension View {
 }
 
 extension View {
-    func validated(_ state: ValidatedState,
-                   fallbackErrorMessage: String = "Invalid input") -> some View {
+    func validated(_ state: ValidatedState) -> some View {
         VStack(alignment: .leading,
                spacing: 6) {
             self
                 .border(state.isInvalid ? Color.red : Color.clear, width: 2)
             
-            if case let .invalid(error) = state {
-                let localizedErrorMessage = error.localizedErrorMessage(fallbackErrorMessage)
-                
+            if case let .invalid(errorMessage) = state {
                 HStack(alignment: .top,
                        spacing: 4) {
                     Image(systemName: "exclamationmark.circle.fill")
                         .font(.caption)
-                    Text(localizedErrorMessage)
+                    Text(errorMessage)
                         .font(.caption)
                 }
                 .foregroundColor(.red)
@@ -115,12 +106,7 @@ extension View {
     }
 }
 
-extension Error {
-    func localizedErrorMessage(_ fallbackMessage: String) -> String {
-        guard let error = self as? LocalizedError else {
-            return fallbackMessage
-        }
-        
-        return error.errorDescription ?? fallbackMessage
-    }
+#Preview {
+    let viewModel = RegistrationViewModel()
+    RegistrationView(viewModel: viewModel)
 }

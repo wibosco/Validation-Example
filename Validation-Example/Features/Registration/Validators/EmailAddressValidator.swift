@@ -8,18 +8,9 @@
 
 import Foundation
 
-enum EmailValidationError: LocalizedError {
+enum EmailValidationError: Error {
     case empty
     case invalidFormat
-    
-    var errorDescription: String? {
-        switch self {
-        case .empty:
-            return "Email address cannot be empty"
-        case .invalidFormat:
-            return "Email domain format is invalid"
-        }
-    }
 }
 
 struct EmailAddressValidator: Validator {
