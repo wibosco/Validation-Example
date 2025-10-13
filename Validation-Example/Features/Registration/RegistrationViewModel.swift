@@ -20,14 +20,17 @@ class RegistrationViewModel: ObservableObject {
     @Published var emailAddress: String = ""
     @Published var password: String = ""
     
-    @Published var emailAddressState: ValidatedState = .empty
-    @Published var passwordState: ValidatedState = .empty
+    @Published private(set) var emailAddressState: ValidatedState = .empty
+    @Published private(set) var passwordState: ValidatedState = .empty
     
+    private let validatorFactory: ValidatorFactory
     private let scheduler: AnySchedulerOf<RunLoop>
     
     // MARK: - Init
     
-    init(scheduler: AnySchedulerOf<RunLoop> = .main) {
+    init(validatorFactory: ValidatorFactory = DefaultValidatorFactory(),
+         scheduler: AnySchedulerOf<RunLoop> = .main) {
+        self.validatorFactory = validatorFactory
         self.scheduler = scheduler
         
         subscribeToEmailAddressUpdates()
@@ -37,12 +40,11 @@ class RegistrationViewModel: ObservableObject {
     // MARK: - DebouncePublisher
     
     private func subscribeToEmailAddressUpdates() {
-        createPublisher(
-            $emailAddress,
-                        validator: EmailAddressValidator()) { error in
+        let validator = validatorFactory.createEmailAddressValidator()
+        
+        createPublisher($emailAddress,
+                        validator: validator) { error in
             switch error {
-            case .empty:
-                return "Email address cannot be empty"
             case .invalidFormat:
                 return "Email domain format is invalid"
             }
@@ -51,8 +53,10 @@ class RegistrationViewModel: ObservableObject {
     }
     
     private func subscribeToPasswordUpdates() {
+        let validator = validatorFactory.createPasswordValidator()
+        
         createPublisher($password,
-                        validator: PasswordValidator()) { error in
+                        validator: validator) { error in
             switch error {
             case .tooShort:
                 return "Password must be at least 8 characters long"
@@ -90,7 +94,7 @@ class RegistrationViewModel: ObservableObject {
                     let errorMessage = errorMapper(error)
                     
                     return .invalid(errorMessage)
-                } catch {
+                } catch { // `.map` is earsing the typed throw
                     return .invalid("Unknown error")
                 }
             }

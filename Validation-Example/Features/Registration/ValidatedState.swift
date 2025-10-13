@@ -5,7 +5,7 @@
 //  Created by William Boles on 10/10/2025.
 //
 
-enum ValidatedState {
+enum ValidatedState: Equatable {
     case empty
     case valid
     case invalid(String)
