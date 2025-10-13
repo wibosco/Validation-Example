@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		43389D952E8E987900835AA8 /* CombineSchedulers in Frameworks */ = {isa = PBXBuildFile; productRef = 43389D942E8E987900835AA8 /* CombineSchedulers */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		43ADC8AB2E8BD81200CDD935 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -43,7 +39,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				43389D952E8E987900835AA8 /* CombineSchedulers in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,7 +90,6 @@
 			);
 			name = "Validation-Example";
 			packageProductDependencies = (
-				43389D942E8E987900835AA8 /* CombineSchedulers */,
 			);
 			productName = "Validation-Example";
 			productReference = 43ADC89D2E8BD80F00CDD935 /* Validation-Example.app */;
@@ -153,7 +147,6 @@
 			mainGroup = 43ADC8942E8BD80F00CDD935;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				43389D932E8E987900835AA8 /* XCRemoteSwiftPackageReference "combine-schedulers" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 43ADC89E2E8BD80F00CDD935 /* Products */;
@@ -463,25 +456,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		43389D932E8E987900835AA8 /* XCRemoteSwiftPackageReference "combine-schedulers" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pointfreeco/combine-schedulers";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.3;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		43389D942E8E987900835AA8 /* CombineSchedulers */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 43389D932E8E987900835AA8 /* XCRemoteSwiftPackageReference "combine-schedulers" */;
-			productName = CombineSchedulers;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 43ADC8952E8BD80F00CDD935 /* Project object */;
 }
