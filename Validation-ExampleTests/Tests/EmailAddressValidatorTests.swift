@@ -29,15 +29,6 @@ struct EmailAddressValidatorTests {
         }
     }
     
-    @Test("Given an empty email address, when it is validated, then the `empty` error is thrown")
-    func validateEmptyEmailAddress() async throws {
-        let emailAddress = ""
-        
-        #expect(throws: EmailValidationError.empty) {
-            try sut.validate(emailAddress)
-        }
-    }
-    
     @Test("Given an email address missing it's @ symbol, when it is validated, then the `invalidFormat` error is thrown")
     func validateEmailAddressWithMissingAtSymbol() async throws {
         let emailAddress = "testtest.com"

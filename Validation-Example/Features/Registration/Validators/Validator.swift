@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Validator {
-    associatedtype ValidationError: LocalizedError & Equatable
+protocol Validator<ValidationError> {
+    associatedtype ValidationError: Error
     func validate(_ value: String) throws(ValidationError)
 }

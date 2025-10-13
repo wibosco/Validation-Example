@@ -8,18 +8,8 @@
 
 import Foundation
 
-enum EmailValidationError: LocalizedError {
-    case empty
+enum EmailValidationError: Error {
     case invalidFormat
-    
-    var errorDescription: String? {
-        switch self {
-        case .empty:
-            return "Email address cannot be empty"
-        case .invalidFormat:
-            return "Email domain format is invalid"
-        }
-    }
 }
 
 struct EmailAddressValidator: Validator {
@@ -28,11 +18,6 @@ struct EmailAddressValidator: Validator {
     
     func validate(_ value: String) throws(EmailValidationError) {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        // Check if empty
-        if trimmedValue.isEmpty {
-            throw EmailValidationError.empty
-        }
         
         // Basic format check using regex
         let emailRegex = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
