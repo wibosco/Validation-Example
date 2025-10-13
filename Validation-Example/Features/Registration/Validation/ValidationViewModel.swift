@@ -7,14 +7,20 @@
 
 import Foundation
 
+@MainActor
+protocol ValidationViewModel {
+    var value: String { get set }
+    var validationState: ValidatedState { get }
+}
+
 @Observable
 @MainActor
-final class ValidationViewModel<V: Validator> {
+final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     var value: String = "" {
         didSet {
             let currentValue = value
             Task { @MainActor in
-                await debouncer.submit(key: uuid) {
+                await debouncer.submit {
                     await self.validate(currentValue)
                 }
             }
@@ -26,13 +32,12 @@ final class ValidationViewModel<V: Validator> {
     private let validator: V
     private let errorMapper: ((V.ValidationError) -> (String))
     private let debouncer: Debouncer
-    private let uuid = UUID().uuidString
     
     // MARK: - Init
     
     init(validator: V,
          errorMapper: @escaping ((V.ValidationError) -> (String)),
-         debouncer: Debouncer = DefaultDebouncer.validationDebouncer) {
+         debouncer: Debouncer = DefaultDebouncer(duration: .seconds(1))) {
         self.validator = validator
         self.errorMapper = errorMapper
         self.debouncer = debouncer

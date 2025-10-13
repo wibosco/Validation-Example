@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum EmailValidationError: Error {
+enum EmailAddressValidationError: Error {
     case invalidFormat
 }
 
@@ -16,7 +16,7 @@ struct EmailAddressValidator: Validator {
 
     // MARK: - Validator
     
-    func validate(_ value: String) throws(EmailValidationError) {
+    func validate(_ value: String) throws(EmailAddressValidationError) {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
         
         // Basic format check using regex
@@ -24,7 +24,7 @@ struct EmailAddressValidator: Validator {
         let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
         
         guard emailPredicate.evaluate(with: trimmedValue) else {
-            throw EmailValidationError.invalidFormat
+            throw EmailAddressValidationError.invalidFormat
         }
     }
 }

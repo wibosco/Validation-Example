@@ -8,14 +8,11 @@
 import Foundation
 
 protocol Debouncer: Sendable {
-    func submit(key: String,
-                _ action: @escaping @Sendable () async -> Void) async
-    func cancel(key: String) async
-    func cancelAll() async
+    func submit(_ action: @escaping @Sendable () async -> Void) async
 }
 
 actor DefaultDebouncer: Debouncer {
-    private var tasks: [String: Task<Void, Never>] = [:]
+    private var task: Task<Void, Never>?
     private let duration: Duration
     
     // MARK: - Init
@@ -26,11 +23,10 @@ actor DefaultDebouncer: Debouncer {
     
     // MARK: - Debouncing
     
-    func submit(key: String,
-                _ action: @escaping @Sendable () async -> Void) {
-        tasks[key]?.cancel()
+    func submit(_ action: @escaping @Sendable () async -> Void) {
+        task?.cancel()
         
-        tasks[key] = Task {
+        task = Task {
             try? await Task.sleep(for: duration)
             
             guard !Task.isCancelled else {
@@ -39,27 +35,7 @@ actor DefaultDebouncer: Debouncer {
             
             await action()
             
-            self.removeTask(for: key)
+            self.task = nil
         }
     }
-    
-    private func removeTask(for key: String) {
-        tasks[key] = nil
-    }
-    
-    // MARK: - Cancel
-    
-    func cancel(key: String) {
-        tasks[key]?.cancel()
-        tasks[key] = nil
-    }
-    
-    func cancelAll() {
-        tasks.values.forEach { $0.cancel() }
-        tasks.removeAll()
-    }
-}
-
-extension DefaultDebouncer {
-    static let validationDebouncer = DefaultDebouncer(duration: .seconds(1))
 }
