@@ -22,11 +22,11 @@ struct RegistrationView: View {
                         .styleAsInputFieldTitle()
 
                     TextField("Enter your email address",
-                              text: $viewModel.emailAddress)
+                              text: $viewModel.emailAddressViewModel.value)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .styleAsInputField()
-                        .validated(viewModel.emailAddressState)
+                        .validated(viewModel.emailAddressViewModel.validationState)
                 }
                 
                 VStack(alignment: .leading,
@@ -35,9 +35,9 @@ struct RegistrationView: View {
                         .styleAsInputFieldTitle()
                     
                     SecureField("Enter your password",
-                                text: $viewModel.password)
+                                text: $viewModel.passwordViewModel.value)
                         .styleAsInputField()
-                        .validated(viewModel.passwordState)
+                        .validated(viewModel.passwordViewModel.validationState)
                     
                     HStack(alignment: .top,
                            spacing: 4) {
@@ -107,6 +107,11 @@ extension View {
 }
 
 #Preview {
-    let viewModel = RegistrationViewModel()
+    let emailAddressValidator = EmailAddressValidator()
+    let passwordValidator = PasswordValidator()
+    
+    let viewModel = RegistrationViewModel(emailAddressValidator: emailAddressValidator.eraseToAnyValidator(),
+                                          passwordValidator: passwordValidator.eraseToAnyValidator())
+    
     RegistrationView(viewModel: viewModel)
 }

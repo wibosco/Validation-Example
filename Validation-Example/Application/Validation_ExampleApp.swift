@@ -11,10 +11,13 @@ import SwiftUI
 struct ModelingFormChanges_ExampleApp: App {
     var body: some Scene {
         WindowGroup {
-            let viewModel = RegistrationViewModel()
-            RegistrationView(
-                viewModel: viewModel
-            )
+            let emailAddressValidator = EmailAddressValidator()
+            let passwordValidator = PasswordValidator()
+            
+            let viewModel = RegistrationViewModel(emailAddressValidator: emailAddressValidator.eraseToAnyValidator(),
+                                                  passwordValidator: passwordValidator.eraseToAnyValidator())
+            
+            RegistrationView(viewModel: viewModel)
         }
     }
 }

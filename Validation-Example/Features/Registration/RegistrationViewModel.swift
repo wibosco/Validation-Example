@@ -15,99 +15,48 @@ import CombineSchedulers
 @MainActor
 final class RegistrationViewModel {
     var canSubmit: Bool {
-        emailAddressState.isValid &&
-        passwordState.isValid
+        emailAddressViewModel.validationState.isValid &&
+        passwordViewModel.validationState.isValid
     }
     
-    var emailAddress: String = "" {
-        didSet {
-            Task { @MainActor in
-                await debouncer.submit(key: "EmailAddressValidation") {
-                    await self.validateEmailAddress()
-                }
-            }
-        }
-    }
-    
-    var password: String = "" {
-        didSet {
-            Task { @MainActor in
-                await debouncer.submit(key: "PasswordValidation") {
-                    await self.validatePassword()
-                }
-            }
-        }
-    }
-    
-    private(set) var emailAddressState: ValidatedState = .empty
-    private(set) var passwordState: ValidatedState = .empty
-    
-    private let validatorFactory: ValidatorFactory
-    private let debouncer: Debouncer
+    var emailAddressViewModel: ValidationViewModel<AnyValidator<EmailValidationError>>
+    var passwordViewModel: ValidationViewModel<AnyValidator<PasswordValidationError>>
     
     // MARK: - Init
     
-    init(validatorFactory: ValidatorFactory = DefaultValidatorFactory(),
-         debouncer: Debouncer = DefaultDebouncer.validationDebouncer) {
-        self.validatorFactory = validatorFactory
-        self.debouncer = debouncer
+    init(emailAddressValidator: AnyValidator<EmailValidationError>,
+         passwordValidator: AnyValidator<PasswordValidationError>) {
+        
+        emailAddressViewModel = ValidationViewModel(validator: emailAddressValidator,
+                                                    errorMapper: Self.mapToString)
+        
+        passwordViewModel = ValidationViewModel(validator: passwordValidator,
+                                                errorMapper: Self.mapToString)
     }
     
-    // MARK: - Validate
+    // MARK: - ErrorMapping
     
-    private func validateEmailAddress() {
-        guard !emailAddress.isEmpty else {
-            emailAddressState = .empty
-            return
-        }
-        
-        let validator = validatorFactory.createEmailAddressValidator()
-        
-        do {
-            try validator.validate(emailAddress)
-                
-            emailAddressState = .valid
-        } catch {
-            let errorMessage: String
-            switch error {
-            case .invalidFormat:
-                errorMessage = "Email domain format is invalid"
-            }
-            
-            emailAddressState = .invalid(errorMessage)
+    private static func mapToString(_ error: EmailValidationError) -> String {
+        switch error {
+        case .invalidFormat:
+            return "Email domain format is invalid"
         }
     }
     
-    private func validatePassword() {
-        guard !password.isEmpty else {
-            passwordState = .empty
-            return
-        }
-        
-        let validator = validatorFactory.createPasswordValidator()
-        
-        do {
-            try validator.validate(password)
-                
-            passwordState = .valid
-        } catch {
-            let errorMessage: String
-            switch error {
-            case .tooShort:
-                errorMessage = "Password must be at least 8 characters long"
-            case .tooLong:
-                errorMessage = "Password must be at most 24 characters"
-            case .missingLowercase:
-                errorMessage = "Password must contain at least one lowercase letter"
-            case .missingUppercase:
-                errorMessage = "Password must contain at least one uppercase letter"
-            case .missingNumber:
-                errorMessage = "Password must contain at least one number"
-            case .missingSpecialCharacter:
-                errorMessage = "Password must contain at least one special character (&, _, -, @)"
-            }
-            
-            passwordState = .invalid(errorMessage)
+    private static func mapToString(_ error: PasswordValidationError) -> String {
+        switch error {
+        case .tooShort:
+            return "Password must be at least 8 characters long"
+        case .tooLong:
+            return "Password must be at most 24 characters"
+        case .missingLowercase:
+            return "Password must contain at least one lowercase letter"
+        case .missingUppercase:
+            return "Password must contain at least one uppercase letter"
+        case .missingNumber:
+            return "Password must contain at least one number"
+        case .missingSpecialCharacter:
+            return "Password must contain at least one special character (&, _, -, @)"
         }
     }
 }
