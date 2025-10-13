@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct RegistrationView: View {
-    @ObservedObject var viewModel: RegistrationViewModel
+    @Bindable var viewModel: RegistrationViewModel
 
     // MARK: - Views
     

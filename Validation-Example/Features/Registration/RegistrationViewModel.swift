@@ -11,93 +11,103 @@ import SwiftUI
 import Combine
 import CombineSchedulers
 
-class RegistrationViewModel: ObservableObject {
+@Observable
+@MainActor
+final class RegistrationViewModel {
     var canSubmit: Bool {
         emailAddressState.isValid &&
         passwordState.isValid
     }
     
-    @Published var emailAddress: String = ""
-    @Published var password: String = ""
+    var emailAddress: String = "" {
+        didSet {
+            Task { @MainActor in
+                await debouncer.submit(key: "EmailAddressValidation") {
+                    await self.validateEmailAddress()
+                }
+            }
+        }
+    }
     
-    @Published private(set) var emailAddressState: ValidatedState = .empty
-    @Published private(set) var passwordState: ValidatedState = .empty
+    var password: String = "" {
+        didSet {
+            Task { @MainActor in
+                await debouncer.submit(key: "PasswordValidation") {
+                    await self.validatePassword()
+                }
+            }
+        }
+    }
+    
+    private(set) var emailAddressState: ValidatedState = .empty
+    private(set) var passwordState: ValidatedState = .empty
     
     private let validatorFactory: ValidatorFactory
-    private let scheduler: AnySchedulerOf<RunLoop>
+    private let debouncer: Debouncer
     
     // MARK: - Init
     
     init(validatorFactory: ValidatorFactory = DefaultValidatorFactory(),
-         scheduler: AnySchedulerOf<RunLoop> = .main) {
+         debouncer: Debouncer = DefaultDebouncer.validationDebouncer) {
         self.validatorFactory = validatorFactory
-        self.scheduler = scheduler
-        
-        subscribeToEmailAddressUpdates()
-        subscribeToPasswordUpdates()
+        self.debouncer = debouncer
     }
     
-    // MARK: - DebouncePublisher
+    // MARK: - Validate
     
-    private func subscribeToEmailAddressUpdates() {
+    private func validateEmailAddress() {
+        guard !emailAddress.isEmpty else {
+            emailAddressState = .empty
+            return
+        }
+        
         let validator = validatorFactory.createEmailAddressValidator()
         
-        createPublisher($emailAddress,
-                        validator: validator) { error in
+        do {
+            try validator.validate(emailAddress)
+                
+            emailAddressState = .valid
+        } catch {
+            let errorMessage: String
             switch error {
             case .invalidFormat:
-                return "Email domain format is invalid"
+                errorMessage = "Email domain format is invalid"
             }
+            
+            emailAddressState = .invalid(errorMessage)
         }
-        .assign(to: &$emailAddressState)
     }
     
-    private func subscribeToPasswordUpdates() {
+    private func validatePassword() {
+        guard !password.isEmpty else {
+            passwordState = .empty
+            return
+        }
+        
         let validator = validatorFactory.createPasswordValidator()
         
-        createPublisher($password,
-                        validator: validator) { error in
+        do {
+            try validator.validate(password)
+                
+            passwordState = .valid
+        } catch {
+            let errorMessage: String
             switch error {
             case .tooShort:
-                return "Password must be at least 8 characters long"
+                errorMessage = "Password must be at least 8 characters long"
             case .tooLong:
-                return "Password must be at most 24 characters"
+                errorMessage = "Password must be at most 24 characters"
             case .missingLowercase:
-                return "Password must contain at least one lowercase letter"
+                errorMessage = "Password must contain at least one lowercase letter"
             case .missingUppercase:
-                return "Password must contain at least one uppercase letter"
+                errorMessage = "Password must contain at least one uppercase letter"
             case .missingNumber:
-                return "Password must contain at least one number"
+                errorMessage = "Password must contain at least one number"
             case .missingSpecialCharacter:
-                return "Password must contain at least one special character (&, _, -, @)"
+                errorMessage = "Password must contain at least one special character (&, _, -, @)"
             }
+            
+            passwordState = .invalid(errorMessage)
         }
-        .assign(to: &$passwordState)
-    }
-    
-    private func createPublisher<V: Validator>(_ value: Published<String>.Publisher,
-                                               validator: V,
-                                               errorMapper: @escaping (V.ValidationError) -> (String)) -> AnyPublisher<ValidatedState, Never> {
-        value
-            .debounce(for: .seconds(1),
-                      scheduler: scheduler)
-            .removeDuplicates()
-            .map { newValue in
-                guard !newValue.isEmpty else {
-                    return .empty
-                }
-                
-                do {
-                    try validator.validate(newValue)
-                    return .valid
-                } catch let error as V.ValidationError {
-                    let errorMessage = errorMapper(error)
-                    
-                    return .invalid(errorMessage)
-                } catch { // `.map` is earsing the typed throw
-                    return .invalid("Unknown error")
-                }
-            }
-            .eraseToAnyPublisher()
     }
 }
