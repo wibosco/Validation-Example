@@ -59,11 +59,11 @@ struct DefaultValidationViewModelTests {
             receivedError = errorReturned
             return mappedError
         },
-                                      debouncer: debouncer)
+                                             debouncer: debouncer)
         
         let value = "test_value"
         sut.value = value
-
+        
         await debouncer.waitForSubmit()
         
         guard case let .submit(action) = await debouncer.events[0] else {
