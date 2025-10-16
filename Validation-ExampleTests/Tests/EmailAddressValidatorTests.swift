@@ -33,7 +33,7 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithMissingAtSymbol() async throws {
         let emailAddress = "testtest.com"
         
-        #expect(throws: EmailValidationError.invalidFormat) {
+        #expect(throws: EmailAddressValidationError.invalidFormat) {
             try sut.validate(emailAddress)
         }
     }
@@ -42,7 +42,7 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithMissingUsername() async throws {
         let emailAddress = "@test.com"
         
-        #expect(throws: EmailValidationError.invalidFormat) {
+        #expect(throws: EmailAddressValidationError.invalidFormat) {
             try sut.validate(emailAddress)
         }
     }
@@ -51,7 +51,7 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithMissingDomain() async throws {
         let emailAddress = "test@"
         
-        #expect(throws: EmailValidationError.invalidFormat) {
+        #expect(throws: EmailAddressValidationError.invalidFormat) {
             try sut.validate(emailAddress)
         }
     }
@@ -60,7 +60,7 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithAnInvalidDomainFormat() async throws {
         let emailAddress = "test@testcom"
         
-        #expect(throws: EmailValidationError.invalidFormat) {
+        #expect(throws: EmailAddressValidationError.invalidFormat) {
             try sut.validate(emailAddress)
         }
     }
