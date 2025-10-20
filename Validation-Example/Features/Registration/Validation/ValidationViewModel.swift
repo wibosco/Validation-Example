@@ -16,20 +16,15 @@ protocol ValidationViewModel<Value> {
 
 @Observable
 @MainActor
-final class DefaultValidationViewModel<V: Validator, Value: Sendable & Equatable>: ValidationViewModel where Value == V.Value {
-    var value: Value {
+final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
+    var value: V.Value {
         didSet {
-            let currentValue = value
-            Task { @MainActor in
-                await debouncer.submit {
-                    await self.validate(currentValue)
-                }
-            }
+            validateAfterDebouncing(value)
         }
     }
-    private let defaultValue: Value
+    private let defaultValue: V.Value
     
-    private(set) var validationState: ValidatedState = .untouched
+    private(set) var validationState: ValidatedState = .unchanged
     
     private let validator: V
     private let errorMapper: ((V.ValidationError) -> (String))
@@ -37,7 +32,7 @@ final class DefaultValidationViewModel<V: Validator, Value: Sendable & Equatable
     
     // MARK: - Init
     
-    init(defaultValue: Value,
+    init(defaultValue: V.Value,
          validator: V,
          errorMapper: @escaping ((V.ValidationError) -> (String)),
          debouncer: Debouncer = DefaultDebouncer(duration: .seconds(1))) {
@@ -50,15 +45,23 @@ final class DefaultValidationViewModel<V: Validator, Value: Sendable & Equatable
     
     // MARK: - Validate
     
-    private func validate(_ currentValue: Value) {
+    private func validateAfterDebouncing(_ currentValue: Value) {
+        Task {
+            await debouncer.submit {
+                await self.validate(currentValue)
+            }
+        }
+    }
+    
+    private func validate(_ currentValue: V.Value) {
         guard currentValue != defaultValue else {
-            validationState = .untouched
+            validationState = .unchanged
             return
         }
         
         do {
             try validator.validate(currentValue)
-                
+            
             validationState = .valid
         } catch {
             let errorMessage = errorMapper(error)
@@ -68,27 +71,16 @@ final class DefaultValidationViewModel<V: Validator, Value: Sendable & Equatable
     }
 }
 
-@Observable
-@MainActor
-final class AnyValidationViewModel<Value: Sendable & Equatable>: ValidationViewModel {
-    private var wrappedViewModel: any ValidationViewModel<Value>
+extension DefaultValidationViewModel {
     
-    var value: Value {
-        get { wrappedViewModel.value }
-        set { wrappedViewModel.value = newValue }
-    }
+    // MARK: - CustomStringConvertible Convenience
     
-    var validationState: ValidatedState {
-        wrappedViewModel.validationState
-    }
-    
-    init<VM: ValidationViewModel>(_ viewModel: VM) where VM.Value == Value {
-        self.wrappedViewModel = viewModel
-    }
-}
-
-extension ValidationViewModel {
-    func eraseToAnyValidationViewModel() -> AnyValidationViewModel<Value> {
-        AnyValidationViewModel(self)
+    convenience init(defaultValue: Value,
+                     validator: V,
+                     debouncer: Debouncer = DefaultDebouncer(duration: .seconds(1))) where V.ValidationError: CustomStringConvertible {
+        self.init(defaultValue: defaultValue,
+                  validator: validator,
+                  errorMapper: { $0.description },
+                  debouncer: debouncer)
     }
 }

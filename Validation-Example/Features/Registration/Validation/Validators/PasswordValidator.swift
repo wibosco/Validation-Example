@@ -6,45 +6,36 @@
 //
 import Foundation
 
-enum PasswordValidationError: Error {
-    case tooShort
-    case tooLong
-    case missingLowercase
-    case missingUppercase
-    case missingNumber
-    case missingSpecialCharacter
-}
-
 struct PasswordValidator: Validator {
     
     // MARK: - Validator
     
     func validate(_ value: String) throws(PasswordValidationError) {
         guard value.count >= 8 else {
-            throw PasswordValidationError.tooShort
+            throw .tooShort
         }
         
         guard value.count <= 24 else {
-            throw PasswordValidationError.tooLong
+            throw .tooLong
         }
         
         guard value.contains(where: { $0.isLowercase }) else {
-            throw PasswordValidationError.missingLowercase
+            throw .missingLowercase
         }
         
         guard value.contains(where: { $0.isUppercase }) else {
-            throw PasswordValidationError.missingUppercase
+            throw .missingUppercase
         }
         
         guard value.contains(where: { $0.isNumber }) else {
-            throw PasswordValidationError.missingNumber
+            throw .missingNumber
         }
         
         let allowedSpecialChars = CharacterSet(charactersIn: "&,_,-,@")
         let hasSpecialChar = value.unicodeScalars.contains { allowedSpecialChars.contains($0) }
         
         guard hasSpecialChar else {
-            throw PasswordValidationError.missingSpecialCharacter
+            throw .missingSpecialCharacter
         }
     }
 }

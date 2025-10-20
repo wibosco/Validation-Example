@@ -14,56 +14,76 @@ struct RegistrationView: View {
     // MARK: - Views
     
     var body: some View {
-        Text("Registration")
-        
         NavigationView {
             VStack(spacing: 20) {
-                VStack(alignment: .leading,
-                       spacing: 6) {
-                    Text("Email Address")
-                        .styleAsInputFieldTitle()
-
-                    TextField("Enter your email address",
-                              text: $viewModel.emailAddressViewModel.value)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .styleAsInputField()
-                        .validated(viewModel.emailAddressViewModel.validationState)
-                }
-                
-                VStack(alignment: .leading,
-                       spacing: 6) {
-                    Text("Password")
-                        .styleAsInputFieldTitle()
-                    
-                    SecureField("Enter your password",
-                                text: $viewModel.passwordViewModel.value)
-                        .styleAsInputField()
-                        .validated(viewModel.passwordViewModel.validationState)
-                    
-                    HStack(alignment: .top,
-                           spacing: 4) {
-                        Image(systemName: "info.circle")
-                            .font(.caption)
-
-                        Text("Password must: \n - Be between 8 and 24 characters in length. \n - Contain a lower case letter. \n - Contain an upper case letter. \n - Contain a specical symbol from: \"&, _, -, @\".")
-                            .font(.caption)
-                    }
-                    .foregroundColor(.secondary)
-                }
+                emailAddressField
+                passwordField
                 
                 Spacer()
                 
-                Button("Submit") {
-                    if viewModel.canSubmit {
-                        // Omitted submission code
-                    } else {
-                        // Omitted alert code
-                    }
-                }
+                submitButton
             }
             .padding()
             .navigationTitle("Registration")
+        }
+    }
+    
+    private var emailAddressField: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Email Address")
+                .styleAsInputFieldTitle()
+            
+            TextField("Enter your email address",
+                      text: $viewModel.emailAddressViewModel.value)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .keyboardType(.emailAddress)
+                .textContentType(.emailAddress)
+                .styleAsInputField()
+                .validated(viewModel.emailAddressViewModel.validationState)
+        }
+    }
+    
+    private var passwordField: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Password")
+                .styleAsInputFieldTitle()
+            
+            SecureField("Enter your password",
+                        text: $viewModel.passwordViewModel.value)
+                .textContentType(.newPassword)
+                .styleAsInputField()
+                .validated(viewModel.passwordViewModel.validationState)
+            
+            passwordRequirements
+        }
+    }
+    
+    private var passwordRequirements: some View {
+        HStack(alignment: .top, spacing: 4) {
+            Image(systemName: "info.circle")
+                .font(.caption)
+            
+            Text("""
+                Password must:
+                 - Be between 8 and 24 characters in length.
+                 - Contain a lower case letter.
+                 - Contain an upper case letter.
+                 - Contain a number.
+                 - Contain a special symbol from: "&, _, -, @".
+                """)
+                .font(.caption)
+        }
+        .foregroundColor(.secondary)
+    }
+    
+    private var submitButton: some View {
+        Button("Submit") {
+            if viewModel.canSubmit {
+                // Omitted submission code
+            } else {
+                // Omitted alert code
+            }
         }
     }
 }
