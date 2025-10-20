@@ -14,14 +14,17 @@ struct ModelingFormChanges_ExampleApp: App {
             let emailAddressValidator = EmailAddressValidator()
             let passwordValidator = PasswordValidator()
             
-            let emailAddressViewModel = DefaultValidationViewModel(validator: emailAddressValidator) { error in
+            let emailAddressViewModel = DefaultValidationViewModel<EmailAddressValidator, String>(defaultValue: "",
+                                                                                                  validator: emailAddressValidator) { error in
                 switch error {
                 case .invalidFormat:
                     return "Email address format is invalid"
                 }
             }
+                .eraseToAnyValidationViewModel()
                 
-            let passwordViewModel = DefaultValidationViewModel(validator: passwordValidator) { error in
+            let passwordViewModel = DefaultValidationViewModel<PasswordValidator, String>(defaultValue: "",
+                                                                                          validator: passwordValidator) { error in
                 switch error {
                 case .tooShort:
                     return "Password must be at least 8 characters long"
@@ -37,6 +40,7 @@ struct ModelingFormChanges_ExampleApp: App {
                     return "Password must contain at least one special character (&, _, -, @)"
                 }
             }
+                .eraseToAnyValidationViewModel()
             
             let viewModel = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel,
                                                   passwordViewModel: passwordViewModel)
