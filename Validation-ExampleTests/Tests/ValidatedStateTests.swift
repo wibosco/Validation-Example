@@ -14,7 +14,7 @@ struct ValidatedStateTests {
     @Test("Given state, when `isInvalid` is called, then the correct boolean is returned",
           arguments: zip(
             [
-                .empty,
+                .untouched,
                 .invalid("test_value"),
                 .valid
             ] as [ValidatedState],
@@ -33,7 +33,7 @@ struct ValidatedStateTests {
     @Test("Given state, when `isValid` is called, then the correct boolean is returned",
           arguments: zip(
             [
-                .empty,
+                .untouched,
                 .invalid("test_value"),
                 .valid
             ] as [ValidatedState],

@@ -14,6 +14,8 @@ struct RegistrationView: View {
     // MARK: - Views
     
     var body: some View {
+        Text("Registration")
+        
         NavigationView {
             VStack(spacing: 20) {
                 VStack(alignment: .leading,
@@ -110,16 +112,20 @@ extension View {
     let emailAddressValidator = EmailAddressValidator()
     let passwordValidator = PasswordValidator()
     
-    let emailAddressViewModel = DefaultValidationViewModel(validator: emailAddressValidator) { error in
+    let emailAddressViewModel = DefaultValidationViewModel(defaultValue: "",
+                                                           validator: emailAddressValidator) { error in
         "Email Address validation error"
     }
+        .eraseToAnyValidationViewModel()
         
-    let passwordViewModel = DefaultValidationViewModel(validator: passwordValidator) { error in
+    let passwordViewModel = DefaultValidationViewModel(defaultValue: "",
+                                                       validator: passwordValidator) { error in
         "Password validation error"
     }
+        .eraseToAnyValidationViewModel()
     
     let viewModel = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel,
                                           passwordViewModel: passwordViewModel)
-    
+        
     RegistrationView(viewModel: viewModel)
 }

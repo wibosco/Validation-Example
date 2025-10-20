@@ -98,6 +98,6 @@ struct DefaultValidationViewModelTests {
         await action()
         
         #expect(validator.events.isEmpty)
-        #expect(sut.validationState == .empty)
+        #expect(sut.validationState == .untouched)
     }
 }
