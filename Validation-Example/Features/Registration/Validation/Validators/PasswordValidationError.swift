@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum PasswordValidationError: Error {
+enum PasswordValidationError: Error, Equatable {
     case tooShort
     case tooLong
     case missingLowercase

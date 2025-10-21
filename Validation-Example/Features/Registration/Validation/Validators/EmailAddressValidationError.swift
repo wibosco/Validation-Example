@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum EmailAddressValidationError: Error {
+enum EmailAddressValidationError: Error, Equatable {
     case empty
     case missingAtSign
     case multipleAtSigns

@@ -11,5 +11,5 @@ import Foundation
 
 final class StubValidationViewModel: ValidationViewModel {
     var value: String = ""
-    var validationState: ValidatedState = .empty
+    var validationState: ValidatedState = .unchanged
 }

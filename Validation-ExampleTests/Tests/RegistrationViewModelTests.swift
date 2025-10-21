@@ -23,8 +23,8 @@ struct RegistrationViewModelTests {
         emailAddressViewModel = StubValidationViewModel()
         passwordViewModel = StubValidationViewModel()
         
-        sut = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel,
-                                    passwordViewModel: passwordViewModel)
+        sut = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel.eraseToAnyValidationViewModel(),
+                                    passwordViewModel: passwordViewModel.eraseToAnyValidationViewModel())
     }
     
     // MARK: - Tests
