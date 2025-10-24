@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Validator: Sendable {
+protocol Validator {
     associatedtype Value: Sendable & Equatable
     associatedtype ValidationError: Error
     

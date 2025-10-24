@@ -48,7 +48,9 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     private func validateAfterDebouncing(_ currentValue: Value) {
         Task {
             await debouncer.submit {
-                await self.validate(currentValue)
+                Task { @MainActor in
+                    self.validate(currentValue)
+                }
             }
         }
     }
