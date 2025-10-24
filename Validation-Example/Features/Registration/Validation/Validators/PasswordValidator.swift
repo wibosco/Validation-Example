@@ -10,7 +10,7 @@ struct PasswordValidator: Validator {
     
     // MARK: - Validator
     
-    func validate(_ value: String) throws(PasswordValidationError) {
+    func validate(_ value: String) async throws(PasswordValidationError) {
         guard value.count >= 8 else {
             throw .tooShort
         }

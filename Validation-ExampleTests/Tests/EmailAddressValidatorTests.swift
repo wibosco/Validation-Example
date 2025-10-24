@@ -24,8 +24,8 @@ struct EmailAddressValidatorTests {
     func validateValidEmailAddress() async throws {
         let emailAddress = "te.st@test.com"
         
-        #expect(throws: Never.self) {
-            try sut.validate(emailAddress)
+        await #expect(throws: Never.self) {
+            try await sut.validate(emailAddress)
         }
     }
 
@@ -33,8 +33,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithOnlyWhiteSpace() async throws {
         let emailAddress = "    "
         
-        #expect(throws: EmailAddressValidationError.empty) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.empty) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -42,8 +42,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithMissingAtSymbol() async throws {
         let emailAddress = "testtest.com"
         
-        #expect(throws: EmailAddressValidationError.missingAtSign) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.missingAtSign) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -51,8 +51,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithMultipleAySymbols() async throws {
         let emailAddress = "test@te@st.com"
         
-        #expect(throws: EmailAddressValidationError.multipleAtSigns) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.multipleAtSigns) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -60,8 +60,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithMissingUsername() async throws {
         let emailAddress = "@test.com"
         
-        #expect(throws: EmailAddressValidationError.noLocalPart) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.noLocalPart) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -69,8 +69,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithMissingDomain() async throws {
         let emailAddress = "test@"
         
-        #expect(throws: EmailAddressValidationError.noDomainPart) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.noDomainPart) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -78,8 +78,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithInvalidCharactersInLocal() async throws {
         let emailAddress = "te!st@test.com"
         
-        #expect(throws: EmailAddressValidationError.invalidLocalCharacters("!")) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.invalidLocalCharacters("!")) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -87,8 +87,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressStartsWithADot() async throws {
         let emailAddress = ".test@test.com"
         
-        #expect(throws: EmailAddressValidationError.localStartsOrEndsWithDot) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.localStartsOrEndsWithDot) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -96,8 +96,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressEndsWithADot() async throws {
         let emailAddress = "test.@test.com"
         
-        #expect(throws: EmailAddressValidationError.localStartsOrEndsWithDot) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.localStartsOrEndsWithDot) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -105,8 +105,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressEndsWithConsecutiveDots() async throws {
         let emailAddress = "te..st@test.com"
         
-        #expect(throws: EmailAddressValidationError.consecutiveDots) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.consecutiveDots) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -114,8 +114,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithDomainBeingTooShort() async throws {
         let emailAddress = "test@testcom"
         
-        #expect(throws: EmailAddressValidationError.domainTooShort) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.domainTooShort) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -123,8 +123,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithInvalidCharactersInDomain() async throws {
         let emailAddress = "test@test.c!om"
         
-        #expect(throws: EmailAddressValidationError.invalidDomainLabel("c!om")) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.invalidDomainLabel("c!om")) {
+            try await sut.validate(emailAddress)
         }
     }
     
@@ -132,8 +132,8 @@ struct EmailAddressValidatorTests {
     func validateEmailAddressWithTLDBeingTooShort() async throws {
         let emailAddress = "test@test.c"
         
-        #expect(throws: EmailAddressValidationError.invalidTopLevelDomain("c")) {
-            try sut.validate(emailAddress)
+        await #expect(throws: EmailAddressValidationError.invalidTopLevelDomain("c")) {
+            try await sut.validate(emailAddress)
         }
     }
 }

@@ -27,7 +27,7 @@ struct DefaultValidationViewModelTests {
 
     @Test("Given `value` is set with a non-empty value, when validation passes, then `validationState` is `valid`")
     func valueIsNonEmptyAndValidationPasses() async throws {
-        validator.validateResponse = .success(Void())
+        await validator.setValidateResponse(.success(Void()))
 
         let sut = DefaultValidationViewModel(
             defaultValue: "",
@@ -48,14 +48,14 @@ struct DefaultValidationViewModelTests {
 
         await action()
 
-        #expect(validator.events[0] == .validate(value))
+        #expect(await validator.events[0] == .validate(value))
         #expect(sut.validationState == .valid)
     }
 
     @Test("Given `value` is set with a non-empty value, when validation fails, then `validationState` is `invalid` and error is mapped")
     func valueIsNonEmptyAndValidationFails() async throws {
         let error = FakeError.test
-        validator.validateResponse = .failure(error)
+        await validator.setValidateResponse(.failure(error))
 
         var receivedError: FakeError?
         let mappedError = "test_mapped_value"
@@ -82,13 +82,13 @@ struct DefaultValidationViewModelTests {
         await action()
 
         #expect(receivedError == error)
-        #expect(validator.events[0] == .validate(value))
+        #expect(await validator.events[0] == .validate(value))
         #expect(sut.validationState == .invalid(mappedError))
     }
 
     @Test("Given `value` is set with an empty value, then `validationState` is `unchanged`")
     func valueIsEmpty() async throws {
-        validator.validateResponse = .success(Void())
+        await validator.setValidateResponse(.success(Void()))
 
         let sut = DefaultValidationViewModel(
             defaultValue: "",
@@ -108,7 +108,7 @@ struct DefaultValidationViewModelTests {
 
         await action()
 
-        #expect(validator.events.isEmpty)
+        #expect(await validator.events.isEmpty)
         #expect(sut.validationState == .unchanged)
     }
 }

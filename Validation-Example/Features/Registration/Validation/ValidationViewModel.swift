@@ -35,7 +35,7 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     init(defaultValue: V.Value,
          validator: V,
          errorMapper: @escaping ((V.ValidationError) -> (String)),
-         debouncer: Debouncer = DefaultDebouncer(duration: .seconds(1))) {
+         debouncer: Debouncer) {
         self.validator = validator
         self.errorMapper = errorMapper
         self.debouncer = debouncer
@@ -48,21 +48,19 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     private func validateAfterDebouncing(_ currentValue: Value) {
         Task {
             await debouncer.submit {
-                Task { @MainActor in
-                    self.validate(currentValue)
-                }
+                await self.validate(currentValue)
             }
         }
     }
     
-    private func validate(_ currentValue: V.Value) {
+    private func validate(_ currentValue: V.Value) async {
         guard currentValue != defaultValue else {
             validationState = .unchanged
             return
         }
         
         do {
-            try validator.validate(currentValue)
+            try await validator.validate(currentValue)
             
             validationState = .valid
         } catch {

@@ -12,7 +12,7 @@ struct EmailAddressValidator: Validator {
 
     // MARK: - Validator
     
-    func validate(_ value: String) throws(EmailAddressValidationError) {
+    func validate(_ value: String) async throws(EmailAddressValidationError) {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
 
         // 1. Empty

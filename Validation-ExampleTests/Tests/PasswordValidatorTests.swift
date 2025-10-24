@@ -24,8 +24,8 @@ struct PasswordValidatorTests {
     func validateValidPasswordWithAtSymbol() async throws {
         let password = "Test@123"
         
-        #expect(throws: Never.self) {
-            try sut.validate(password)
+        await #expect(throws: Never.self) {
+            try await sut.validate(password)
         }
     }
     
@@ -33,8 +33,8 @@ struct PasswordValidatorTests {
     func validateValidPasswordWithAmpersandSymbol() async throws {
         let password = "Test&123"
         
-        #expect(throws: Never.self) {
-            try sut.validate(password)
+        await #expect(throws: Never.self) {
+            try await sut.validate(password)
         }
     }
     
@@ -42,8 +42,8 @@ struct PasswordValidatorTests {
     func validateValidPasswordWithUnderscoreSymbol() async throws {
         let password = "Test_123"
         
-        #expect(throws: Never.self) {
-            try sut.validate(password)
+        await #expect(throws: Never.self) {
+            try await sut.validate(password)
         }
     }
     
@@ -51,8 +51,8 @@ struct PasswordValidatorTests {
     func validateValidPasswordWithDashSymbol() async throws {
         let password = "Test-123"
         
-        #expect(throws: Never.self) {
-            try sut.validate(password)
+        await #expect(throws: Never.self) {
+            try await sut.validate(password)
         }
     }
     
@@ -60,8 +60,8 @@ struct PasswordValidatorTests {
     func validateValidPasswordOnTheTooShortBoundary() async throws {
         let password = "Test@123"
         
-        #expect(throws: Never.self) {
-            try sut.validate(password)
+        await #expect(throws: Never.self) {
+            try await sut.validate(password)
         }
     }
     
@@ -69,8 +69,8 @@ struct PasswordValidatorTests {
     func validateValidPasswordOnTheTooLongBoundary() async throws {
         let password = "Test@1234567891011121314"
         
-        #expect(throws: Never.self) {
-            try sut.validate(password)
+        await #expect(throws: Never.self) {
+            try await sut.validate(password)
         }
     }
     
@@ -78,8 +78,8 @@ struct PasswordValidatorTests {
     func validatePasswordThatIsTooShort() async throws {
         let password = "Test@1"
         
-        #expect(throws: PasswordValidationError.tooShort) {
-            try sut.validate(password)
+        await #expect(throws: PasswordValidationError.tooShort) {
+            try await sut.validate(password)
         }
     }
     
@@ -87,8 +87,8 @@ struct PasswordValidatorTests {
     func validatePasswordThatIsTooLong() async throws {
         let password = "Test@123456789101112131415"
         
-        #expect(throws: PasswordValidationError.tooLong) {
-            try sut.validate(password)
+        await #expect(throws: PasswordValidationError.tooLong) {
+            try await sut.validate(password)
         }
     }
         
@@ -96,8 +96,8 @@ struct PasswordValidatorTests {
     func validatePasswordThatIsMissingALowercaseLetter() async throws {
         let password = "TEST@123"
         
-        #expect(throws: PasswordValidationError.missingLowercase) {
-            try sut.validate(password)
+        await #expect(throws: PasswordValidationError.missingLowercase) {
+            try await sut.validate(password)
         }
     }
     
@@ -105,8 +105,8 @@ struct PasswordValidatorTests {
     func validatePasswordThatIsMissingAUppercaseLetter() async throws {
         let password = "test@123"
         
-        #expect(throws: PasswordValidationError.missingUppercase) {
-            try sut.validate(password)
+        await #expect(throws: PasswordValidationError.missingUppercase) {
+            try await sut.validate(password)
         }
     }
     
@@ -114,8 +114,8 @@ struct PasswordValidatorTests {
     func validatePasswordThatIsMissingANumber() async throws {
         let password = "Test@test"
         
-        #expect(throws: PasswordValidationError.missingNumber) {
-            try sut.validate(password)
+        await #expect(throws: PasswordValidationError.missingNumber) {
+            try await sut.validate(password)
         }
     }
     
@@ -123,8 +123,8 @@ struct PasswordValidatorTests {
     func validatePasswordThatIsMissingASpecialCharacter() async throws {
         let password = "Test1234"
         
-        #expect(throws: PasswordValidationError.missingSpecialCharacter) {
-            try sut.validate(password)
+        await #expect(throws: PasswordValidationError.missingSpecialCharacter) {
+            try await sut.validate(password)
         }
     }
     
@@ -132,8 +132,8 @@ struct PasswordValidatorTests {
     func validatePasswordThatHasAnInvalidSpecialCharacter() async throws {
         let password = "Test£1234"
         
-        #expect(throws: PasswordValidationError.missingSpecialCharacter) {
-            try sut.validate(password)
+        await #expect(throws: PasswordValidationError.missingSpecialCharacter) {
+            try await sut.validate(password)
         }
     }
 }

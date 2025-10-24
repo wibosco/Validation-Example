@@ -133,15 +133,11 @@ extension View {
     let passwordValidator = PasswordValidator()
     
     let emailAddressViewModel = DefaultValidationViewModel(defaultValue: "",
-                                                           validator: emailAddressValidator) { error in
-        "Email Address validation error"
-    }
+                                                           validator: emailAddressValidator)
         .eraseToAnyValidationViewModel()
         
     let passwordViewModel = DefaultValidationViewModel(defaultValue: "",
-                                                       validator: passwordValidator) { error in
-        "Password validation error"
-    }
+                                                       validator: passwordValidator)
         .eraseToAnyValidationViewModel()
     
     let viewModel = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel,
