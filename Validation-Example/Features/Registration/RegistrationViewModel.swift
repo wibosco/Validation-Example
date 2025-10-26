@@ -9,7 +9,6 @@
 import Foundation
 
 @Observable
-@MainActor
 final class RegistrationViewModel {
     var canSubmit: Bool {
         emailAddressViewModel.validationState.isValid &&

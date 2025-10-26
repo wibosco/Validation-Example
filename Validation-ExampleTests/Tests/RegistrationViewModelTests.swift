@@ -10,7 +10,6 @@ import Foundation
 
 @testable import Validation_Example
 
-@MainActor
 struct RegistrationViewModelTests {
     var emailAddressViewModel: StubValidationViewModel!
     var passwordViewModel: StubValidationViewModel!

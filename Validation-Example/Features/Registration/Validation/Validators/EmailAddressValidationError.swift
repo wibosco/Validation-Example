@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum EmailAddressValidationError: Error, Equatable {
+enum EmailAddressValidationError: Error, Equatable, CustomStringConvertible {
     case empty
     case missingAtSign
     case multipleAtSigns
@@ -19,10 +19,10 @@ enum EmailAddressValidationError: Error, Equatable {
     case invalidDomainLabel(String)
     case domainTooShort
     case invalidTopLevelDomain(String)
-}
-
-extension EmailAddressValidationError: CustomStringConvertible {
-    var description: String {
+    
+    // MARK: - CustomStringConvertible
+    
+    nonisolated var description: String {
         switch self {
         case .empty:
             return "Email Address must not be empty."

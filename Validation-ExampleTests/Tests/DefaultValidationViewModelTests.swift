@@ -11,7 +11,6 @@ import Testing
 
 // MARK: - Tests
 
-@MainActor
 struct DefaultValidationViewModelTests {
     var validator: StubValidator<FakeError>!
     var debouncer: StubDebouncer!

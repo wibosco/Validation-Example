@@ -7,7 +7,6 @@
 
 import Foundation
 
-@MainActor
 protocol ValidationViewModel<Value> {
     associatedtype Value: Sendable & Equatable
     var value: Value { get set }
@@ -15,7 +14,6 @@ protocol ValidationViewModel<Value> {
 }
 
 @Observable
-@MainActor
 final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     var value: V.Value {
         didSet {
@@ -45,7 +43,7 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     
     // MARK: - Validate
     
-    private func validateAfterDebouncing(_ currentValue: Value) {
+    private func validateAfterDebouncing(_ currentValue: V.Value) {
         Task {
             await debouncer.submit {
                 await self.validate(currentValue)

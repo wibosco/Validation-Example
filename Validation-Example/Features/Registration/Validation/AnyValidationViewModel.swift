@@ -8,7 +8,6 @@
 import Foundation
 
 @Observable
-@MainActor
 final class AnyValidationViewModel<Value: Sendable & Equatable>: ValidationViewModel {
     private var wrappedViewModel: any ValidationViewModel<Value>
     
