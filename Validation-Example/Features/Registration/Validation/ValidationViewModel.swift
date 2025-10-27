@@ -44,6 +44,11 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     // MARK: - Validate
     
     private func validateAfterDebouncing(_ currentValue: V.Value) {
+        guard currentValue != defaultValue else {
+            validationState = .unchanged
+            return
+        }
+        
         Task {
             await debouncer.submit {
                 await self.validate(currentValue)
@@ -52,11 +57,6 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     }
     
     private func validate(_ currentValue: V.Value) async {
-        guard currentValue != defaultValue else {
-            validationState = .unchanged
-            return
-        }
-        
         do {
             try await validator.validate(currentValue)
             
