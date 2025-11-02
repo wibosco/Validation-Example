@@ -9,16 +9,20 @@ import Foundation
 
 @testable import Validation_Example
 
-final class StubValidator<ValidationError: Error>: Validator {
+actor StubValidator<ValidationError: Error>: Validator {
     enum Event: Equatable {
         case validate(String)
     }
     
     private(set) var events = [Event]()
     
-    var validateResponse: Result<Void, ValidationError>?
+    private var validateResponse: Result<Void, ValidationError>?
     
-    func validate(_ value: String) throws(ValidationError) {
+    func setValidateResponse(_ response: Result<Void, ValidationError>) {
+        validateResponse = response
+    }
+    
+    func validate(_ value: String) async throws(ValidationError) {
         events.append(.validate(value))
         
         try validateResponse?.get()

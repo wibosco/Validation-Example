@@ -7,7 +7,9 @@
 
 import Foundation
 
-protocol Validator<ValidationError> {
+protocol Validator: Sendable {
+    associatedtype Value: Sendable & Equatable
     associatedtype ValidationError: Error
-    func validate(_ value: String) throws(ValidationError)
+    
+    func validate(_ value: Value) async throws(ValidationError)
 }

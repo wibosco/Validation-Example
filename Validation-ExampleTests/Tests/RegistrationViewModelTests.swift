@@ -10,7 +10,6 @@ import Foundation
 
 @testable import Validation_Example
 
-@MainActor
 struct RegistrationViewModelTests {
     var emailAddressViewModel: StubValidationViewModel!
     var passwordViewModel: StubValidationViewModel!
@@ -23,8 +22,8 @@ struct RegistrationViewModelTests {
         emailAddressViewModel = StubValidationViewModel()
         passwordViewModel = StubValidationViewModel()
         
-        sut = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel,
-                                    passwordViewModel: passwordViewModel)
+        sut = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel.eraseToAnyValidationViewModel(),
+                                    passwordViewModel: passwordViewModel.eraseToAnyValidationViewModel())
     }
     
     // MARK: - Tests

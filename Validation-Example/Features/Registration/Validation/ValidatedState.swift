@@ -6,7 +6,7 @@
 //
 
 enum ValidatedState: Equatable {
-    case empty
+    case unchanged
     case valid
     case invalid(String)
     

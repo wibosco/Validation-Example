@@ -9,4 +9,5 @@ import Foundation
 
 enum FakeError: Error, Equatable {
     case test
+    case invalid
 }
