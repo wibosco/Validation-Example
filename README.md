@@ -3,4 +3,4 @@
 [![License](http://img.shields.io/badge/License-MIT-green.svg?style=flat)](https://github.com/wibosco/Validation-Example/blob/main/LICENSE)
 
 # Validation-Example 
-An example project showing how to validate user input in a composable manner.
+An example project showing how to validate user input in a composable manner. 
