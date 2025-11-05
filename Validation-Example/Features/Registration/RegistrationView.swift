@@ -10,7 +10,7 @@ import SwiftUI
 
 struct RegistrationView: View {
     @Bindable var viewModel: RegistrationViewModel
-
+    
     // MARK: - Views
     
     var body: some View {
@@ -33,14 +33,13 @@ struct RegistrationView: View {
             Text("Email Address")
                 .styleAsInputFieldTitle()
             
-            TextField("Enter your email address",
-                      text: $viewModel.emailAddressViewModel.value)
+            TextValidationField("Enter your email address",
+                                text: $viewModel.emailAddressViewModel.value,
+                                validationState: viewModel.emailAddressViewModel.validationState)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .keyboardType(.emailAddress)
                 .textContentType(.emailAddress)
-                .styleAsInputField()
-                .validated(viewModel.emailAddressViewModel.validationState)
         }
     }
     
@@ -49,11 +48,10 @@ struct RegistrationView: View {
             Text("Password")
                 .styleAsInputFieldTitle()
             
-            SecureField("Enter your password",
-                        text: $viewModel.passwordViewModel.value)
+            SecureValidationField("Enter your password",
+                                  text: $viewModel.passwordViewModel.value,
+                                  validationState: viewModel.passwordViewModel.validationState)
                 .textContentType(.newPassword)
-                .styleAsInputField()
-                .validated(viewModel.passwordViewModel.validationState)
             
             passwordRequirements
         }
@@ -72,7 +70,7 @@ struct RegistrationView: View {
                  - Contain a number.
                  - Contain a special symbol from: "&, _, -, @".
                 """)
-                .font(.caption)
+            .font(.caption)
         }
         .foregroundColor(.secondary)
     }
@@ -119,12 +117,12 @@ extension View {
                     Text(errorMessage)
                         .font(.caption)
                 }
-                .foregroundColor(.red)
-                .transition(.opacity)
+                       .foregroundColor(.red)
+                       .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.2),
-                   value: state.isInvalid)
+               .animation(.easeInOut(duration: 0.2),
+                          value: state.isInvalid)
     }
 }
 
@@ -135,13 +133,13 @@ extension View {
     let emailAddressViewModel = DefaultValidationViewModel(defaultValue: "",
                                                            validator: emailAddressValidator)
         .eraseToAnyValidationViewModel()
-        
+    
     let passwordViewModel = DefaultValidationViewModel(defaultValue: "",
                                                        validator: passwordValidator)
         .eraseToAnyValidationViewModel()
     
     let viewModel = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel,
                                           passwordViewModel: passwordViewModel)
-        
+    
     RegistrationView(viewModel: viewModel)
 }
