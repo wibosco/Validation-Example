@@ -8,57 +8,44 @@
 import Foundation
 
 protocol ValidationViewModel<Value> {
-    associatedtype Value: Sendable & Equatable
+    associatedtype Value: Equatable
     var value: Value { get set }
     var validationState: ValidatedState { get }
+    
+    func validate(_ currentValue: Value) -> ValidatedState
 }
 
 @Observable
 final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
-    var value: V.Value {
-        didSet {
-            validateAfterDebouncing(value)
-        }
-    }
+    var value: V.Value
     private let defaultValue: V.Value
     
     private(set) var validationState: ValidatedState = .unchanged
     
     private let validator: V
     private let errorMapper: ((V.ValidationError) -> (String))
-    private let debouncer: Debouncer
     
     // MARK: - Init
     
     init(defaultValue: V.Value,
          validator: V,
-         errorMapper: @escaping ((V.ValidationError) -> (String)),
-         debouncer: Debouncer) {
+         errorMapper: @escaping ((V.ValidationError) -> (String))) {
         self.validator = validator
         self.errorMapper = errorMapper
-        self.debouncer = debouncer
         self.defaultValue = defaultValue
         self.value = defaultValue
     }
     
     // MARK: - Validate
     
-    private func validateAfterDebouncing(_ currentValue: V.Value) {
+    func validate(_ currentValue: V.Value) -> ValidatedState {
         guard currentValue != defaultValue else {
             validationState = .unchanged
-            return
+            return validationState
         }
         
-        Task {
-            await debouncer.submit {
-                await self.validate(currentValue)
-            }
-        }
-    }
-    
-    private func validate(_ currentValue: V.Value) async {
         do {
-            try await validator.validate(currentValue)
+            try validator.validate(currentValue)
             
             validationState = .valid
         } catch {
@@ -66,6 +53,8 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
             
             validationState = .invalid(errorMessage)
         }
+        
+        return validationState
     }
 }
 
@@ -74,11 +63,9 @@ extension DefaultValidationViewModel {
     // MARK: - CustomStringConvertible Convenience
     
     convenience init(defaultValue: Value,
-                     validator: V,
-                     debouncer: Debouncer = DefaultDebouncer(duration: .seconds(1))) where V.ValidationError: CustomStringConvertible {
+                     validator: V) where V.ValidationError: CustomStringConvertible {
         self.init(defaultValue: defaultValue,
                   validator: validator,
-                  errorMapper: { $0.description },
-                  debouncer: debouncer)
+                  errorMapper: { $0.description })
     }
 }

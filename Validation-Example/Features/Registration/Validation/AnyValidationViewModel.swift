@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable
-final class AnyValidationViewModel<Value: Sendable & Equatable>: ValidationViewModel {
+final class AnyValidationViewModel<Value: Equatable>: ValidationViewModel {
     private var wrappedViewModel: any ValidationViewModel<Value>
     
     var value: Value {
@@ -22,6 +22,10 @@ final class AnyValidationViewModel<Value: Sendable & Equatable>: ValidationViewM
     
     init<ViewModel: ValidationViewModel>(_ viewModel: ViewModel) where ViewModel.Value == Value {
         self.wrappedViewModel = viewModel
+    }
+    
+    func validate(_ currentValue: Value) -> ValidatedState {
+        return wrappedViewModel.validate(currentValue)
     }
 }
 
