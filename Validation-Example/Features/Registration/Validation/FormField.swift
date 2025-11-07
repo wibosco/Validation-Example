@@ -12,10 +12,10 @@ struct FormField: View {
     private let title: String?
     private let description: String?
     
-    @State private var validationState: ValidatedState = .unchanged
+//    @State private var validationState: ValidatedState = .unchanged
     
     @Environment(\.isSecure) var isSecure
-    @Environment(\.validationHandler) var validationHandler
+    @Environment(\.validationState) var validationState
     
     @Binding private var text: String
     
@@ -85,11 +85,11 @@ struct FormField: View {
         .background(Color(.systemGray6))
         .cornerRadius(8)
         .border(validationState.isInvalid ? Color.red : Color.clear, width: 2)
-        .onChange(of: text) { oldValue, newValue in
-            Task {
-                self.validationState = await validationHandler?(newValue) ?? .unchanged
-            }
-        }
+//        .onChange(of: text) { oldValue, newValue in
+////            Task {
+////                self.validationState = await validationHandler?(newValue) ?? .unchanged
+////            }
+//        }
     }
     
     var body: some View {
@@ -132,22 +132,39 @@ extension View {
 
 // MARK: - validationField
 
-private struct FormFieldValidationHandler: EnvironmentKey {
-    static var defaultValue: ((String) async -> ValidatedState)?
+private struct FormFieldValidationState: EnvironmentKey {
+    static var defaultValue: ValidatedState = .unchanged
 }
 
 extension EnvironmentValues {
-  var validationHandler: ((String) async -> ValidatedState)? {
-    get { self[FormFieldValidationHandler.self] }
-    set { self[FormFieldValidationHandler.self] = newValue }
+  var validationState: ValidatedState {
+    get { self[FormFieldValidationState.self] }
+    set { self[FormFieldValidationState.self] = newValue }
   }
 }
 
 extension View {
-    func onValidate(_ validationHandler: @escaping (String) async -> ValidatedState) -> some View {
-        environment(\.validationHandler, validationHandler)
+    func validationState(_ value: ValidatedState) -> some View {
+        environment(\.validationState, value)
     }
 }
+
+//private struct FormFieldValidationHandler: EnvironmentKey {
+//    static var defaultValue: ((String) async -> ValidatedState)?
+//}
+//
+//extension EnvironmentValues {
+//  var validationHandler: ((String) async -> ValidatedState)? {
+//    get { self[FormFieldValidationHandler.self] }
+//    set { self[FormFieldValidationHandler.self] = newValue }
+//  }
+//}
+//
+//extension View {
+//    func onValidate(_ validationHandler: @escaping (String) async -> ValidatedState) -> some View {
+//        environment(\.validationHandler, validationHandler)
+//    }
+//}
 
 // MARK: - Preview
 

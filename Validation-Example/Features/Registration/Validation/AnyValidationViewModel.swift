@@ -23,10 +23,6 @@ final class AnyValidationViewModel<Value: Equatable>: ValidationViewModel {
     init<ViewModel: ValidationViewModel>(_ viewModel: ViewModel) where ViewModel.Value == Value {
         self.wrappedViewModel = viewModel
     }
-    
-    func validate(_ currentValue: Value) -> ValidatedState {
-        return wrappedViewModel.validate(currentValue)
-    }
 }
 
 extension ValidationViewModel {

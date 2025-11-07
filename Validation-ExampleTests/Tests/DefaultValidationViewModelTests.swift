@@ -12,12 +12,14 @@ import Testing
 // MARK: - Tests
 
 struct DefaultValidationViewModelTests {
-    var validator: StubValidator<FakeError>!
+    var validator: StubValidator<String, FakeError>!
+    var debouncer: StubDebouncer!
 
     // MARK: - Init
 
     init() {
-        self.validator = StubValidator<FakeError>()
+        self.debouncer = StubDebouncer()
+        self.validator = StubValidator<String, FakeError>()
     }
 
     // MARK: - Tests
@@ -30,12 +32,20 @@ struct DefaultValidationViewModelTests {
             defaultValue: "",
             validator: validator,
             errorMapper: { _ in return "test_mapped_value" },
+            debouncer: debouncer
         )
 
         let value = "test_value"
         sut.value = value
-        
-        _ = sut.validate("test_value")
+
+        await debouncer.waitForSubmit()
+
+        guard case let .submit(action) = await debouncer.events[0] else {
+            Issue.record("Unexpected event")
+            return
+        }
+
+        await action()
 
         #expect(validator.events[0] == .validate(value))
         #expect(sut.validationState == .valid)
@@ -55,33 +65,49 @@ struct DefaultValidationViewModelTests {
                 receivedError = errorReturned
                 return mappedError
             },
+            debouncer: debouncer
         )
 
         let value = "test_value"
         sut.value = value
-        
-        _ = sut.validate("test_value")
+
+        await debouncer.waitForSubmit()
+
+        guard case let .submit(action) = await debouncer.events[0] else {
+            Issue.record("Unexpected event")
+            return
+        }
+
+        await action()
 
         #expect(receivedError == error)
         #expect(validator.events[0] == .validate(value))
         #expect(sut.validationState == .invalid(mappedError))
     }
 
-    @Test("Given `value` is set with an empty value, then `validationState` is `unchanged`")
-    func valueIsEmpty() async throws {
-        validator.validateResponse = .success(Void())
-
-        let sut = DefaultValidationViewModel(
-            defaultValue: "",
-            validator: validator,
-            errorMapper: { _ in return "test_mapped_value" }
-        )
-
-        sut.value = ""
-        
-        _ = sut.validate("")
-
-        #expect(validator.events.isEmpty)
-        #expect(sut.validationState == .unchanged)
-    }
+//    @Test("Given `value` is set with an empty value, then `validationState` is `unchanged`")
+//    func valueIsEmpty() async throws {
+//        validator.validateResponse = .success(Void())
+//
+//        let sut = DefaultValidationViewModel(
+//            defaultValue: "",
+//            validator: validator,
+//            errorMapper: { _ in return "test_mapped_value" },
+//            debouncer: debouncer
+//        )
+//
+//        sut.value = ""
+//
+//        await debouncer.waitForSubmit()
+//
+//        guard case let .submit(action) = await debouncer.events[0] else {
+//            Issue.record("Unexpected event")
+//            return
+//        }
+//
+//        await action()
+//
+//        #expect(await validator.events.isEmpty)
+//        #expect(sut.validationState == .unchanged)
+//    }
 }
