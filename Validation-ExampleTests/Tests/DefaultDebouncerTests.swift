@@ -29,7 +29,7 @@ struct DefaultDebouncerTests {
         
         let flag = Flag()
 
-        sut.submit {
+        sut {
             await flag.mark()
         }
 
@@ -55,11 +55,11 @@ struct DefaultDebouncerTests {
         
         let flag = Flag()
 
-        sut.submit {
+        sut {
             await flag.markFirstRan()
         }
 
-        sut.submit {
+        sut {
             await flag.markSecondRan()
         }
 

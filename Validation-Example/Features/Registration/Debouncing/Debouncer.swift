@@ -9,7 +9,6 @@ import Foundation
 
 @MainActor
 protocol Debouncer {
-    func submit(_ action: @escaping @Sendable () async -> Void)
     func callAsFunction(_ action: @escaping @Sendable () async -> Void)
 }
 
@@ -18,16 +17,22 @@ final class DefaultDebouncer: Debouncer {
     private let delay: Duration
     private var task: Task<Void, Never>?
 
+    // MARK: - Init
+    
     init(delay: Duration) {
         self.delay = delay
     }
-
-    func submit(_ action: @escaping @Sendable () async -> Void) {
+    
+    // MARK: - Debouncing
+    
+    private func submit(_ action: @escaping @Sendable () async -> Void) {
         task?.cancel()
         task = Task {
             try? await Task.sleep(for: delay)
 
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else {
+                return
+            }
             
             await action()
         }

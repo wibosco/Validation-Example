@@ -15,16 +15,16 @@ struct FormField: View {
     @Environment(\.isSecure) var isSecure
     @Environment(\.validationState) var validationState
     
-    @Binding private var text: String
+    @Binding private var value: String
     
     // MARK: - Init
     
-    init(_ placeholder: String,
-         text: Binding<String>,
-         title: String? = nil,
+    init(title: String,
+         placeholder: String,
+         value: Binding<String>,
          description: String? = nil) {
         self.placeholder = placeholder
-        self._text = text
+        self._value = value
         self.title = title
         self.description = description
     }
@@ -70,10 +70,10 @@ struct FormField: View {
         Group {
             if isSecure {
                 SecureField(placeholder,
-                            text: $text)
+                            text: $value)
             } else {
                 TextField(placeholder,
-                          text: $text)
+                          text: $value)
             }
         }
         .padding(12)
@@ -116,7 +116,7 @@ extension View {
   }
 }
 
-// MARK: - validationField
+// MARK: - ValidationField
 
 private struct FormFieldValidationState: EnvironmentKey {
     static var defaultValue: ValidatedState = .unchanged
@@ -138,6 +138,6 @@ extension View {
 // MARK: - Preview
 
 #Preview {
-    FormField("Email address", text: .constant("test@test.com"))
+    FormField(title: "Email address", placeholder: "Enter your email address", value: .constant("test@test.com"), description: "Must be work email address")
 }
 

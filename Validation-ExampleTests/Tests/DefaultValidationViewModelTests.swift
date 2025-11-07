@@ -34,7 +34,7 @@ struct DefaultValidationViewModelTests {
         let value = "test_value"
         sut.value = value
         
-        guard case let .submit(action) = debouncer.events[0] else {
+        guard case let .callAsFunction(action) = debouncer.events[0] else {
             Issue.record("Unexpected event")
             return
         }
@@ -63,7 +63,7 @@ struct DefaultValidationViewModelTests {
         let value = "test_value"
         sut.value = value
         
-        guard case let .submit(action) = debouncer.events[0] else {
+        guard case let .callAsFunction(action) = debouncer.events[0] else {
             Issue.record("Unexpected event")
             return
         }
@@ -88,7 +88,7 @@ struct DefaultValidationViewModelTests {
         
         sut.value = defaultValue
         
-        #expect(await validator.events.isEmpty)
+        #expect(validator.events.isEmpty)
         #expect(sut.validationState == .unchanged)
     }
 }

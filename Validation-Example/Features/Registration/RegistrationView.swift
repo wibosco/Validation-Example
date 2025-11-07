@@ -16,8 +16,8 @@ struct RegistrationView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                emailAddressField
-                passwordField
+                emailAddressFieldView
+                passwordFieldView
                 
                 Spacer()
                 
@@ -28,10 +28,10 @@ struct RegistrationView: View {
         }
     }
     
-    private var emailAddressField: some View {
-        FormField("Enter your email address",
-                  text: $viewModel.emailAddressViewModel.value,
-                  title: "Email Address")
+    private var emailAddressFieldView: some View {
+        FormField(title: "Email Address",
+                  placeholder: "Enter your email address",
+                  value: $viewModel.emailAddressViewModel.value)
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled()
         .keyboardType(.emailAddress)
@@ -39,10 +39,10 @@ struct RegistrationView: View {
         .validationState(viewModel.emailAddressViewModel.validationState)
     }
     
-    private var passwordField: some View {
-        FormField("Enter your password",
-                  text: $viewModel.passwordViewModel.value,
-                  title: "Enter your password",
+    private var passwordFieldView: some View {
+        FormField(title: "Enter your password",
+                  placeholder: "Enter your password",
+                  value: $viewModel.passwordViewModel.value,
                   description: """
                             Password must:
                             - Be between 8 and 24 characters in length.
