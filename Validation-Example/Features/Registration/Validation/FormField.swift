@@ -12,8 +12,8 @@ struct FormField: View {
     private let title: String?
     private let description: String?
     
-    @Environment(\.isSecure) var isSecure
-    @Environment(\.validationState) var validationState
+    @Environment(\.isSecure) private var isSecure
+    @Environment(\.validationState) private var validationState
     
     @Binding private var value: String
     
