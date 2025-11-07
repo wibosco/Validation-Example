@@ -10,14 +10,14 @@ import SwiftUI
 
 struct RegistrationView: View {
     @Bindable var viewModel: RegistrationViewModel
-
+    
     // MARK: - Views
     
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                emailAddressField
-                passwordField
+                emailAddressFieldView
+                passwordFieldView
                 
                 Spacer()
                 
@@ -28,53 +28,32 @@ struct RegistrationView: View {
         }
     }
     
-    private var emailAddressField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Email Address")
-                .styleAsInputFieldTitle()
-            
-            TextField("Enter your email address",
-                      text: $viewModel.emailAddressViewModel.value)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .keyboardType(.emailAddress)
-                .textContentType(.emailAddress)
-                .styleAsInputField()
-                .validated(viewModel.emailAddressViewModel.validationState)
-        }
+    private var emailAddressFieldView: some View {
+        FormField(title: "Email Address",
+                  placeholder: "Enter your email address",
+                  value: $viewModel.emailAddressViewModel.value)
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled()
+        .keyboardType(.emailAddress)
+        .textContentType(.emailAddress)
+        .validationState(viewModel.emailAddressViewModel.validationState)
     }
     
-    private var passwordField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Password")
-                .styleAsInputFieldTitle()
-            
-            SecureField("Enter your password",
-                        text: $viewModel.passwordViewModel.value)
-                .textContentType(.newPassword)
-                .styleAsInputField()
-                .validated(viewModel.passwordViewModel.validationState)
-            
-            passwordRequirements
-        }
-    }
-    
-    private var passwordRequirements: some View {
-        HStack(alignment: .top, spacing: 4) {
-            Image(systemName: "info.circle")
-                .font(.caption)
-            
-            Text("""
-                Password must:
-                 - Be between 8 and 24 characters in length.
-                 - Contain a lower case letter.
-                 - Contain an upper case letter.
-                 - Contain a number.
-                 - Contain a special symbol from: "&, _, -, @".
-                """)
-                .font(.caption)
-        }
-        .foregroundColor(.secondary)
+    private var passwordFieldView: some View {
+        FormField(title: "Enter your password",
+                  placeholder: "Enter your password",
+                  value: $viewModel.passwordViewModel.value,
+                  description: """
+                            Password must:
+                            - Be between 8 and 24 characters in length.
+                            - Contain a lower case letter.
+                            - Contain an upper case letter.
+                            - Contain a number.
+                            - Contain a special symbol from: "&, _, -, @".
+                    """)
+        .textContentType(.newPassword)
+        .isSecure()
+        .validationState(viewModel.passwordViewModel.validationState)
     }
     
     private var submitButton: some View {
@@ -88,46 +67,6 @@ struct RegistrationView: View {
     }
 }
 
-extension View {
-    func styleAsInputField() -> some View {
-        self
-            .padding(12)
-            .background(Color(.systemGray6))
-            .cornerRadius(8)
-    }
-    
-    func styleAsInputFieldTitle() -> some View {
-        self
-            .font(.subheadline)
-            .fontWeight(.medium)
-            .foregroundColor(.primary)
-    }
-}
-
-extension View {
-    func validated(_ state: ValidatedState) -> some View {
-        VStack(alignment: .leading,
-               spacing: 6) {
-            self
-                .border(state.isInvalid ? Color.red : Color.clear, width: 2)
-            
-            if case let .invalid(errorMessage) = state {
-                HStack(alignment: .top,
-                       spacing: 4) {
-                    Image(systemName: "exclamationmark.circle.fill")
-                        .font(.caption)
-                    Text(errorMessage)
-                        .font(.caption)
-                }
-                .foregroundColor(.red)
-                .transition(.opacity)
-            }
-        }
-        .animation(.easeInOut(duration: 0.2),
-                   value: state.isInvalid)
-    }
-}
-
 #Preview {
     let emailAddressValidator = EmailAddressValidator()
     let passwordValidator = PasswordValidator()
@@ -135,13 +74,13 @@ extension View {
     let emailAddressViewModel = DefaultValidationViewModel(defaultValue: "",
                                                            validator: emailAddressValidator)
         .eraseToAnyValidationViewModel()
-        
+    
     let passwordViewModel = DefaultValidationViewModel(defaultValue: "",
                                                        validator: passwordValidator)
         .eraseToAnyValidationViewModel()
     
     let viewModel = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel,
                                           passwordViewModel: passwordViewModel)
-        
+    
     RegistrationView(viewModel: viewModel)
 }

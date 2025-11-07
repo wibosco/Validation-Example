@@ -15,7 +15,7 @@ struct DefaultDebouncerTests {
     // MARK: - Init
     
     init() {
-        sut = DefaultDebouncer(duration: .milliseconds(100))
+        sut = DefaultDebouncer(delay: .milliseconds(100))
     }
     
     // MARK: - Tests
@@ -29,7 +29,7 @@ struct DefaultDebouncerTests {
         
         let flag = Flag()
 
-        await sut.submit {
+        sut {
             await flag.mark()
         }
 
@@ -55,11 +55,11 @@ struct DefaultDebouncerTests {
         
         let flag = Flag()
 
-        await sut.submit {
+        sut {
             await flag.markFirstRan()
         }
 
-        await sut.submit {
+        sut {
             await flag.markSecondRan()
         }
 

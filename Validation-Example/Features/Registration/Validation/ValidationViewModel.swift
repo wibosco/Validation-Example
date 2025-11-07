@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 protocol ValidationViewModel<Value> {
     associatedtype Value: Sendable & Equatable
     var value: Value { get set }
@@ -14,10 +15,20 @@ protocol ValidationViewModel<Value> {
 }
 
 @Observable
+@MainActor
 final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     var value: V.Value {
         didSet {
-            validateAfterDebouncing(value)
+            guard value != defaultValue else {
+                validationState = .unchanged
+
+                return
+            }
+            
+            debouncer {
+                // `await` needed as we switch back onto te `MainActor` context
+                await self.validate(self.value)
+            }
         }
     }
     private let defaultValue: V.Value
@@ -43,22 +54,10 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     
     // MARK: - Validate
     
-    private func validateAfterDebouncing(_ currentValue: V.Value) {
-        guard currentValue != defaultValue else {
-            validationState = .unchanged
-            return
-        }
-        
-        Task {
-            await debouncer.submit {
-                await self.validate(currentValue)
-            }
-        }
-    }
-    
-    private func validate(_ currentValue: V.Value) async {
+    private func validate(_ currentValue: V.Value) {
+
         do {
-            try await validator.validate(currentValue)
+            try validator.validate(currentValue)
             
             validationState = .valid
         } catch {
@@ -75,7 +74,7 @@ extension DefaultValidationViewModel {
     
     convenience init(defaultValue: Value,
                      validator: V,
-                     debouncer: Debouncer = DefaultDebouncer(duration: .seconds(1))) where V.ValidationError: CustomStringConvertible {
+                     debouncer: Debouncer = DefaultDebouncer(delay: .milliseconds(500))) where V.ValidationError: CustomStringConvertible {
         self.init(defaultValue: defaultValue,
                   validator: validator,
                   errorMapper: { $0.description },
