@@ -10,7 +10,9 @@ import Testing
 @testable import Validation_Example
 
 struct ValidatedStateTests {
-
+    
+    // MARK: - Tests
+    
     @Test("Given state, when `isInvalid` is called, then the correct boolean is returned",
           arguments: zip(
             [

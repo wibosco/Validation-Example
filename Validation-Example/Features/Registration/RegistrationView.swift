@@ -37,7 +37,6 @@ struct RegistrationView: View {
         .keyboardType(.emailAddress)
         .textContentType(.emailAddress)
         .validationState(viewModel.emailAddressViewModel.validationState)
-//        .onValidate(viewModel.emailAddressViewModel.validate)
     }
     
     private var passwordField: some View {
@@ -55,7 +54,6 @@ struct RegistrationView: View {
         .textContentType(.newPassword)
         .isSecure()
         .validationState(viewModel.passwordViewModel.validationState)
-//        .onValidate(viewModel.passwordViewModel.validate)
     }
     
     private var submitButton: some View {

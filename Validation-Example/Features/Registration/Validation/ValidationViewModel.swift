@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor
 protocol ValidationViewModel<Value> {
@@ -19,7 +20,15 @@ protocol ValidationViewModel<Value> {
 final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     var value: V.Value {
         didSet {
-            validateAfterDebouncing(value)
+            guard value != defaultValue else {
+                validationState = .unchanged
+
+                return
+            }
+            
+            debouncer.submit {
+                await self.validate(self.value)
+            }
         }
     }
     private let defaultValue: V.Value
@@ -45,20 +54,8 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     
     // MARK: - Validate
     
-    private func validateAfterDebouncing(_ currentValue: V.Value) {
-        guard currentValue != defaultValue else {
-            validationState = .unchanged
-            return
-        }
-        
-        Task {
-            await debouncer.submit {
-                await self.validate(currentValue)
-            }
-        }
-    }
-    
     private func validate(_ currentValue: V.Value) async {
+
         do {
             try validator.validate(currentValue)
             
