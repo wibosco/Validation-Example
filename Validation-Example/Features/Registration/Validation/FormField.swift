@@ -60,8 +60,6 @@ struct FormField: View {
                     .font(.caption)
             }
             .foregroundColor(.red)
-        } else {
-            EmptyView()
         }
     }
     
