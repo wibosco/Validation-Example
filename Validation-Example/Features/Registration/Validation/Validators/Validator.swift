@@ -7,8 +7,9 @@
 
 import Foundation
 
-protocol Validator: Sendable {
-    associatedtype Value: Sendable & Equatable
+@MainActor
+protocol Validator {
+    associatedtype Value: Equatable
     associatedtype ValidationError: Error
     
     func validate(_ value: Value) throws(ValidationError)

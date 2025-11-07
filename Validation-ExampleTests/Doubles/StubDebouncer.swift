@@ -12,12 +12,12 @@ import Foundation
 @MainActor
 final class StubDebouncer: Debouncer {
     enum Event {
-        case callAsFunction(@Sendable () async -> Void)
+        case callAsFunction(() async -> Void)
     }
     
     private(set) var events = [Event]()
     
-    func callAsFunction(_ action: @escaping @Sendable () async -> Void) {
+    func callAsFunction(_ action: @escaping () async -> Void) {
         events.append(.callAsFunction(action))
     }
 }

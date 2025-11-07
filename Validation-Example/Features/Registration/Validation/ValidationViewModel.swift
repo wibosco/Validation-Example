@@ -9,13 +9,12 @@ import Foundation
 
 @MainActor
 protocol ValidationViewModel<Value> {
-    associatedtype Value: Sendable & Equatable
+    associatedtype Value: Equatable
     var value: Value { get set }
     var validationState: ValidatedState { get }
 }
 
 @Observable
-@MainActor
 final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     var value: V.Value {
         didSet {
@@ -26,8 +25,7 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
             }
             
             debouncer {
-                // `await` needed as we switch back onto te `MainActor` context
-                await self.validate(self.value)
+                self.validate(self.value)
             }
         }
     }
