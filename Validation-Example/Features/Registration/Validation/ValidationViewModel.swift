@@ -42,7 +42,7 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     init(defaultValue: V.Value,
          validator: V,
          errorMapper: @escaping ((V.ValidationError) -> (String)),
-         debouncer: Debouncer) {
+         debouncer: Debouncer = DefaultDebouncer(delay: .milliseconds(500))) {
         self.validator = validator
         self.errorMapper = errorMapper
         self.debouncer = debouncer
@@ -70,12 +70,10 @@ extension DefaultValidationViewModel {
     
     // MARK: - CustomStringConvertible Convenience
     
-    convenience init(defaultValue: Value,
-                     validator: V,
-                     debouncer: Debouncer = DefaultDebouncer(delay: .milliseconds(500))) where V.ValidationError: CustomStringConvertible {
+    convenience init(defaultValue: V.Value,
+                     validator: V) where V.ValidationError: CustomStringConvertible {
         self.init(defaultValue: defaultValue,
                   validator: validator,
-                  errorMapper: { $0.description },
-                  debouncer: debouncer)
+                  errorMapper: { $0.description })
     }
 }
