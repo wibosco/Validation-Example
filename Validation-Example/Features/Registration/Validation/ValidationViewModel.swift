@@ -18,7 +18,7 @@ protocol ValidationViewModel<Value> {
 final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     var value: V.Value {
         didSet {
-            guard value != defaultValue else {
+            guard value != initialValue else {
                 validationState = .unchanged
 
                 return
@@ -29,25 +29,25 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
             }
         }
     }
-    private let defaultValue: V.Value
     
     private(set) var validationState: ValidatedState = .unchanged
     
     private let validator: V
     private let errorMapper: ((V.ValidationError) -> (String))
     private let debouncer: Debouncer
+    private let initialValue: V.Value
     
     // MARK: - Init
     
-    init(defaultValue: V.Value,
+    init(initialValue: V.Value,
          validator: V,
          errorMapper: @escaping ((V.ValidationError) -> (String)),
          debouncer: Debouncer = DefaultDebouncer(delay: .milliseconds(500))) {
+        self.value = initialValue
+        self.initialValue = initialValue
         self.validator = validator
         self.errorMapper = errorMapper
         self.debouncer = debouncer
-        self.defaultValue = defaultValue
-        self.value = defaultValue
     }
     
     // MARK: - Validate
@@ -68,11 +68,10 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
 
 extension DefaultValidationViewModel {
     
-    // MARK: - CustomStringConvertible Convenience
+    // MARK: - Convenience
     
-    convenience init(defaultValue: V.Value,
-                     validator: V) where V.ValidationError: CustomStringConvertible {
-        self.init(defaultValue: defaultValue,
+    convenience init(validator: V) where V.Value == String, V.ValidationError: CustomStringConvertible {
+        self.init(initialValue: "",
                   validator: validator,
                   errorMapper: { $0.description })
     }

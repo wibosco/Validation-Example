@@ -9,8 +9,7 @@ import SwiftUI
 
 struct FormField: View {
     private let placeholder: String
-    private let title: String?
-    private let description: String?
+    private let title: String
     
     @Environment(\.isSecure) private var isSecure
     @Environment(\.validationState) private var validationState
@@ -21,33 +20,19 @@ struct FormField: View {
     
     init(title: String,
          placeholder: String,
-         value: Binding<String>,
-         description: String? = nil) {
+         value: Binding<String>) {
         self.placeholder = placeholder
         self._value = value
         self.title = title
-        self.description = description
     }
     
     // MARK: - Views
     
-    @ViewBuilder
     private var titleView: some View {
-        if let title {
-            Text(title)
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
-        }
-    }
-    
-    @ViewBuilder
-    private var descriptionView: some View {
-        if let description {
-            Text(description)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
+        Text(title)
+            .font(.subheadline)
+            .fontWeight(.medium)
+            .foregroundColor(.primary)
     }
     
     @ViewBuilder
@@ -84,8 +69,6 @@ struct FormField: View {
         VStack(alignment: .leading,
                spacing: 0) {
             titleView
-                .padding(.bottom, 6)
-            descriptionView
                 .padding(.bottom, 6)
             inputView
                 .padding(.bottom, 12)
@@ -136,6 +119,6 @@ extension View {
 // MARK: - Preview
 
 #Preview {
-    FormField(title: "Email address", placeholder: "Enter your email address", value: .constant("test@test.com"), description: "Must be work email address")
+    FormField(title: "Email address", placeholder: "Enter your email address", value: .constant("test@test.com"))
 }
 

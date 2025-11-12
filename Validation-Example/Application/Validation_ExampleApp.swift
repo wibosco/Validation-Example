@@ -14,11 +14,9 @@ struct ModelingFormChanges_ExampleApp: App {
             let emailAddressValidator = EmailAddressValidator()
             let passwordValidator = PasswordValidator()
             
-            let emailAddressViewModel = DefaultValidationViewModel(defaultValue: "",
-                                                                   validator: emailAddressValidator)
+            let emailAddressViewModel = DefaultValidationViewModel(validator: emailAddressValidator)
                 
-            let passwordViewModel = DefaultValidationViewModel(defaultValue: "",
-                                                               validator: passwordValidator)
+            let passwordViewModel = DefaultValidationViewModel(validator: passwordValidator)
             
             let viewModel = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel.eraseToAnyValidationViewModel(),
                                                   passwordViewModel: passwordViewModel.eraseToAnyValidationViewModel())

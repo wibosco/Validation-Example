@@ -42,15 +42,7 @@ struct RegistrationView: View {
     private var passwordFieldView: some View {
         FormField(title: "Enter your password",
                   placeholder: "Enter your password",
-                  value: $viewModel.passwordViewModel.value,
-                  description: """
-                            Password must:
-                            - Be between 8 and 24 characters in length.
-                            - Contain a lower case letter.
-                            - Contain an upper case letter.
-                            - Contain a number.
-                            - Contain a special symbol from: "&, _, -, @".
-                    """)
+                  value: $viewModel.passwordViewModel.value)
         .textContentType(.newPassword)
         .isSecure()
         .validationState(viewModel.passwordViewModel.validationState)
@@ -71,12 +63,10 @@ struct RegistrationView: View {
     let emailAddressValidator = EmailAddressValidator()
     let passwordValidator = PasswordValidator()
     
-    let emailAddressViewModel = DefaultValidationViewModel(defaultValue: "",
-                                                           validator: emailAddressValidator)
+    let emailAddressViewModel = DefaultValidationViewModel(validator: emailAddressValidator)
         .eraseToAnyValidationViewModel()
     
-    let passwordViewModel = DefaultValidationViewModel(defaultValue: "",
-                                                       validator: passwordValidator)
+    let passwordViewModel = DefaultValidationViewModel(validator: passwordValidator)
         .eraseToAnyValidationViewModel()
     
     let viewModel = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel,
