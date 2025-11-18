@@ -7,16 +7,16 @@
 
 import Foundation
 
-enum PasswordValidationError: Error, Equatable, LocalizedError {
+enum PasswordValidationError: Error, Equatable {
     case tooShort
     case tooLong
     case missingLowercase
     case missingUppercase
     case missingNumber
     case missingSpecialCharacter
-    
-    // MARK: - LocalizedError
-    
+}
+
+extension PasswordValidationError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .tooShort:
