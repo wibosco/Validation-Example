@@ -29,7 +29,7 @@ struct DefaultDebouncerTests {
         
         let flag = Flag()
 
-        sut {
+        sut.submit {
             await flag.mark()
         }
 
@@ -44,7 +44,7 @@ struct DefaultDebouncerTests {
         #expect(await flag.ran == true)
     }
     
-    @Test("Given an action is schduled on the debouncer, when a second action is schduled, then the first action should be cancelled")
+    @Test("Given an action is schduled on the debouncer, when a second action is scheduled, then the first action should be cancelled")
     func submittingTwiceOnlyYieldsOneEvent() async throws {
         actor Flag {
             private(set) var firstRan = false
@@ -55,11 +55,11 @@ struct DefaultDebouncerTests {
         
         let flag = Flag()
 
-        sut {
+        sut.submit {
             await flag.markFirstRan()
         }
 
-        sut {
+        sut.submit {
             await flag.markSecondRan()
         }
 

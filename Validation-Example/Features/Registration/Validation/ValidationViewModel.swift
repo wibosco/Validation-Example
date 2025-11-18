@@ -24,7 +24,7 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
                 return
             }
             
-            debouncer {
+            debouncer.submit {
                 self.validate(self.value)
             }
         }
