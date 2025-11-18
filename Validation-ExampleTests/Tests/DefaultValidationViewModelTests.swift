@@ -26,7 +26,7 @@ struct DefaultValidationViewModelTests {
     func valueIsNonEmptyAndValidationPasses() async throws {
         validator.validateResponse = .success(Void())
         
-        let sut = DefaultValidationViewModel(defaultValue: "",
+        let sut = DefaultValidationViewModel(initialValue: "",
                                              validator: validator,
                                              errorMapper: { _ in return "test_mapped_value" },
                                              debouncer: debouncer)
@@ -52,7 +52,7 @@ struct DefaultValidationViewModelTests {
         
         var receivedError: FakeError?
         let mappedError = "test_mapped_value"
-        let sut = DefaultValidationViewModel(defaultValue: "",
+        let sut = DefaultValidationViewModel(initialValue: "",
                                              validator: validator,
                                              errorMapper: { errorReturned in
             receivedError = errorReturned
@@ -81,7 +81,7 @@ struct DefaultValidationViewModelTests {
         
         let defaultValue = "test_value"
         
-        let sut = DefaultValidationViewModel(defaultValue: defaultValue,
+        let sut = DefaultValidationViewModel(initialValue: defaultValue,
                                              validator: validator,
                                              errorMapper: { _ in return "test_mapped_value" },
                                              debouncer: debouncer)

@@ -53,7 +53,6 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     // MARK: - Validate
     
     private func validate(_ currentValue: V.Value) {
-
         do {
             try validator.validate(currentValue)
             
@@ -70,9 +69,9 @@ extension DefaultValidationViewModel {
     
     // MARK: - Convenience
     
-    convenience init(validator: V) where V.Value == String, V.ValidationError: CustomStringConvertible {
+    convenience init(validator: V) where V.Value == String, V.ValidationError: LocalizedError {
         self.init(initialValue: "",
                   validator: validator,
-                  errorMapper: { $0.description })
+                  errorMapper: { $0.errorDescription ?? "Unknown error" })
     }
 }

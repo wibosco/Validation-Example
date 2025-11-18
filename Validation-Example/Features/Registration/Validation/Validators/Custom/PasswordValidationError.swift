@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum PasswordValidationError: Error, Equatable, CustomStringConvertible {
+enum PasswordValidationError: Error, Equatable, LocalizedError {
     case tooShort
     case tooLong
     case missingLowercase
@@ -15,9 +15,9 @@ enum PasswordValidationError: Error, Equatable, CustomStringConvertible {
     case missingNumber
     case missingSpecialCharacter
     
-    // MARK: - CustomStringConvertible
+    // MARK: - LocalizedError
     
-    nonisolated var description: String {
+    var errorDescription: String? {
         switch self {
         case .tooShort:
             return "Password must be at least 8 characters long."

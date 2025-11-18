@@ -72,7 +72,7 @@ struct FormField: View {
                 .padding(.bottom, 6)
             inputView
                 .padding(.bottom, 12)
-
+            
             validatedView
         }
     }
@@ -81,20 +81,20 @@ struct FormField: View {
 // MARK: - SecureField
 
 private struct FormFieldSecure: EnvironmentKey {
-  static var defaultValue: Bool = false
+    static var defaultValue: Bool = false
 }
 
 extension EnvironmentValues {
-  var isSecure: Bool {
-    get { self[FormFieldSecure.self] }
-    set { self[FormFieldSecure.self] = newValue }
-  }
+    var isSecure: Bool {
+        get { self[FormFieldSecure.self] }
+        set { self[FormFieldSecure.self] = newValue }
+    }
 }
 
 extension View {
-  func isSecure(_ value: Bool = true) -> some View {
-    environment(\.isSecure, value)
-  }
+    func isSecure(_ value: Bool = true) -> some View {
+        environment(\.isSecure, value)
+    }
 }
 
 // MARK: - ValidationField
@@ -104,10 +104,10 @@ private struct FormFieldValidationState: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-  var validationState: ValidatedState {
-    get { self[FormFieldValidationState.self] }
-    set { self[FormFieldValidationState.self] = newValue }
-  }
+    var validationState: ValidatedState {
+        get { self[FormFieldValidationState.self] }
+        set { self[FormFieldValidationState.self] = newValue }
+    }
 }
 
 extension View {
