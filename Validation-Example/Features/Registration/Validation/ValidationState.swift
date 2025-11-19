@@ -1,11 +1,11 @@
 //
-//  ValidatedState.swift
+//  ValidationState.swift
 //  Validation-Example
 //
 //  Created by William Boles on 10/10/2025.
 //
 
-enum ValidatedState: Equatable {
+enum ValidationState: Equatable {
     case unchanged
     case valid
     case invalid(String)

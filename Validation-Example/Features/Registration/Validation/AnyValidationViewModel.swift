@@ -16,7 +16,7 @@ final class AnyValidationViewModel<Value: Equatable>: ValidationViewModel {
         set { wrappedViewModel.value = newValue }
     }
     
-    var validationState: ValidatedState {
+    var validationState: ValidationState {
         wrappedViewModel.validationState
     }
     

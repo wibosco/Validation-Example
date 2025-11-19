@@ -93,11 +93,11 @@ extension View {
 // MARK: - ValidationField
 
 extension EnvironmentValues {
-    @Entry var validationState: ValidatedState = .unchanged
+    @Entry var validationState: ValidationState = .unchanged
 }
 
 extension View {
-    func validationState(_ value: ValidatedState) -> some View {
+    func validationState(_ value: ValidationState) -> some View {
         environment(\.validationState, value)
     }
 }

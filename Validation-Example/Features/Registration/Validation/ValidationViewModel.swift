@@ -10,7 +10,7 @@ import Foundation
 protocol ValidationViewModel<Value> {
     associatedtype Value: Equatable
     var value: Value { get set }
-    var validationState: ValidatedState { get }
+    var validationState: ValidationState { get }
 }
 
 @Observable
@@ -29,7 +29,7 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
         }
     }
     
-    private(set) var validationState: ValidatedState = .unchanged
+    private(set) var validationState: ValidationState = .unchanged
     
     private let validator: V
     private let errorMapper: ((V.ValidationError) -> (String))

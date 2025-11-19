@@ -1,5 +1,5 @@
 //
-//  ValidatedStateTests.swift
+//  ValidationStateTests.swift
 //  Validation-ExampleTests
 //
 //  Created by William Boles on 13/10/2025.
@@ -9,7 +9,7 @@ import Testing
 
 @testable import Validation_Example
 
-struct ValidatedStateTests {
+struct ValidationStateTests {
     
     // MARK: - Tests
     
@@ -19,7 +19,7 @@ struct ValidatedStateTests {
                 .unchanged,
                 .invalid("test_value"),
                 .valid
-            ] as [ValidatedState],
+            ] as [ValidationState],
             [
                 false,
                 false,
@@ -27,7 +27,7 @@ struct ValidatedStateTests {
             ]
           )
     )
-    func isValid(state: ValidatedState,
+    func isValid(state: ValidationState,
                  outcome: Bool) async throws {
         #expect(state.isValid == outcome)
     }
@@ -38,7 +38,7 @@ struct ValidatedStateTests {
                 .unchanged,
                 .invalid("test_value"),
                 .valid
-            ] as [ValidatedState],
+            ] as [ValidationState],
             [
                 false,
                 true,
@@ -46,7 +46,7 @@ struct ValidatedStateTests {
             ]
           )
     )
-    func isInvalid(state: ValidatedState,
+    func isInvalid(state: ValidationState,
                    outcome: Bool) async throws {
         #expect(state.isInvalid == outcome)
     }
