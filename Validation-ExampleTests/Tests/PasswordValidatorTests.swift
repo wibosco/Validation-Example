@@ -20,36 +20,9 @@ struct PasswordValidatorTests {
     
     // MARK: - Tests
     
-    @Test("Given a valid password with @ symbol, when it is validated, then no error is thrown")
+    @Test("Given a valid password, when it is validated, then no error is thrown")
     func validateValidPasswordWithAtSymbol() async throws {
         let password = "Test@123"
-        
-        #expect(throws: Never.self) {
-            try sut.validate(password)
-        }
-    }
-    
-    @Test("Given a valid password with & symbol, when it is validated, then no error is thrown")
-    func validateValidPasswordWithAmpersandSymbol() async throws {
-        let password = "Test&123"
-        
-        #expect(throws: Never.self) {
-            try sut.validate(password)
-        }
-    }
-    
-    @Test("Given a valid password with _ symbol, when it is validated, then no error is thrown")
-    func validateValidPasswordWithUnderscoreSymbol() async throws {
-        let password = "Test_123"
-        
-        #expect(throws: Never.self) {
-            try sut.validate(password)
-        }
-    }
-    
-    @Test("Given a valid password with - symbol, when it is validated, then no error is thrown")
-    func validateValidPasswordWithDashSymbol() async throws {
-        let password = "Test-123"
         
         #expect(throws: Never.self) {
             try sut.validate(password)
@@ -115,24 +88,6 @@ struct PasswordValidatorTests {
         let password = "Test@test"
         
         #expect(throws: PasswordValidationError.missingNumber) {
-            try sut.validate(password)
-        }
-    }
-    
-    @Test("Given a password that is missing a special symbol, when it is validated, then the `missingSpecialCharacter` error is thrown")
-    func validatePasswordThatIsMissingASpecialCharacter() async throws {
-        let password = "Test1234"
-        
-        #expect(throws: PasswordValidationError.missingSpecialCharacter) {
-            try sut.validate(password)
-        }
-    }
-    
-    @Test("Given a password with a invalid special symbol, when it is validated, then the `missingSpecialCharacter` error is thrown")
-    func validatePasswordThatHasAnInvalidSpecialCharacter() async throws {
-        let password = "Test£1234"
-        
-        #expect(throws: PasswordValidationError.missingSpecialCharacter) {
             try sut.validate(password)
         }
     }

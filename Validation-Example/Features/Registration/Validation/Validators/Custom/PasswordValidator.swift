@@ -35,12 +35,5 @@ struct PasswordValidator: Validator {
         guard value.contains(where: { $0.isNumber }) else {
             throw .missingNumber
         }
-        
-        // 6. Must have at least one special character
-        let allowedSpecialChars = CharacterSet(charactersIn: "&,_,-,@")
-        let hasSpecialChar = value.unicodeScalars.contains { allowedSpecialChars.contains($0) }
-        guard hasSpecialChar else {
-            throw .missingSpecialCharacter
-        }
     }
 }

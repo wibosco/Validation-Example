@@ -13,7 +13,6 @@ enum PasswordValidationError: Error, Equatable {
     case missingLowercase
     case missingUppercase
     case missingNumber
-    case missingSpecialCharacter
 }
 
 extension PasswordValidationError: LocalizedError {
@@ -29,8 +28,6 @@ extension PasswordValidationError: LocalizedError {
             return "Password must contain at least one uppercase letter."
         case .missingNumber:
             return "Password must contain at least one number."
-        case .missingSpecialCharacter:
-            return "Password must contain a special character (&, _, -, @)."
         }
     }
 }
