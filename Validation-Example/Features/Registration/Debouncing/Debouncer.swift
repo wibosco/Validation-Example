@@ -7,12 +7,10 @@
 
 import Foundation
 
-@MainActor
 protocol Debouncer {
     func submit(_ action: @escaping () async -> Void)
 }
 
-@MainActor
 final class DefaultDebouncer: Debouncer {
     private let delay: Duration
     private var task: Task<Void, Never>?

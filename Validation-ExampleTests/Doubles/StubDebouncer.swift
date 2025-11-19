@@ -9,7 +9,6 @@ import Foundation
 
 @testable import Validation_Example
 
-@MainActor
 final class StubDebouncer: Debouncer {
     enum Event {
         case submit(() async -> Void)

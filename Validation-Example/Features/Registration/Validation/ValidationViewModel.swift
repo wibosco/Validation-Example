@@ -7,7 +7,6 @@
 
 import Foundation
 
-@MainActor
 protocol ValidationViewModel<Value> {
     associatedtype Value: Equatable
     var value: Value { get set }

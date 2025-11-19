@@ -80,15 +80,8 @@ struct FormField: View {
 
 // MARK: - SecureField
 
-private struct FormFieldSecure: EnvironmentKey {
-    static var defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    var isSecure: Bool {
-        get { self[FormFieldSecure.self] }
-        set { self[FormFieldSecure.self] = newValue }
-    }
+    @Entry var isSecure: Bool = false
 }
 
 extension View {
@@ -99,15 +92,8 @@ extension View {
 
 // MARK: - ValidationField
 
-private struct FormFieldValidationState: EnvironmentKey {
-    static var defaultValue: ValidatedState = .unchanged
-}
-
 extension EnvironmentValues {
-    var validationState: ValidatedState {
-        get { self[FormFieldValidationState.self] }
-        set { self[FormFieldValidationState.self] = newValue }
-    }
+    @Entry var validationState: ValidatedState = .unchanged
 }
 
 extension View {

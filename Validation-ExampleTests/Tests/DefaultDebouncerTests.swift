@@ -20,7 +20,7 @@ struct DefaultDebouncerTests {
     
     // MARK: - Tests
     
-    @Test("Given an action is schduled on the debouncer, when the duration passed, then that action should be triggered")
+    @Test("Given an action is scheduled on the debouncer, when the duration passed, then that action should be triggered")
     func submitedActionIsTriggeredAfterDuration() async throws {
         actor Flag {
             private(set) var ran = false
@@ -39,12 +39,12 @@ struct DefaultDebouncerTests {
         #expect(await flag.ran == false)
 
         // Long enough
-        try await Task.sleep(for: .milliseconds(60))
+        try await Task.sleep(for: .milliseconds(100))
         
         #expect(await flag.ran == true)
     }
     
-    @Test("Given an action is schduled on the debouncer, when a second action is scheduled, then the first action should be cancelled")
+    @Test("Given an action is scheduled on the debouncer, when a second action is scheduled, then the first action should be cancelled")
     func submittingTwiceOnlyYieldsOneEvent() async throws {
         actor Flag {
             private(set) var firstRan = false

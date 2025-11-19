@@ -7,7 +7,6 @@
 
 import Foundation
 
-@MainActor
 protocol Validator {
     associatedtype Value: Equatable
     associatedtype ValidationError: Error

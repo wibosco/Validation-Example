@@ -9,7 +9,6 @@ import Foundation
 
 @testable import Validation_Example
 
-@MainActor
 final class StubValidator<Value: Sendable & Equatable, ValidationError: Error>: Validator {    
     enum Event: Equatable {
         case validate(Value)
@@ -25,4 +24,3 @@ final class StubValidator<Value: Sendable & Equatable, ValidationError: Error>: 
         try validateResponse?.get()
     }
 }
-
