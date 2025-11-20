@@ -62,7 +62,10 @@ struct FormField: View {
         .padding(12)
         .background(Color(.systemGray6))
         .cornerRadius(8)
-        .border(validationState.isInvalid ? Color.red : Color.clear, width: 2)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(validationState.isInvalid ? Color.red : Color.clear, lineWidth: 2)
+        )
     }
     
     var body: some View {
