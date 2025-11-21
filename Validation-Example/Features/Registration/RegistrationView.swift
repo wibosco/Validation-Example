@@ -14,47 +14,28 @@ struct RegistrationView: View {
     // MARK: - Views
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                emailAddressFieldView
-                passwordFieldView
-                
-                Spacer()
-                
-                submitButton
-            }
-            .padding()
-            .navigationTitle("Registration")
+        HStack(alignment: .top, spacing: 10) {
+            field("Scenario 1: No input", vm: viewModel.emailAddressViewModel)
+            field("Scenario 2: Valid input", vm: viewModel.emailAddressViewModel2)
+            field("Scenario 3: Invalid input", vm: viewModel.passwordViewModel)
         }
+        .padding(20)
     }
     
-    private var emailAddressFieldView: some View {
-        FormField(title: "Email Address",
-                  placeholder: "Enter your email address",
-                  value: $viewModel.emailAddressViewModel.value)
-        .textInputAutocapitalization(.never)
-        .autocorrectionDisabled()
-        .keyboardType(.emailAddress)
-        .textContentType(.emailAddress)
-        .validationState(viewModel.emailAddressViewModel.validationState)
-    }
-    
-    private var passwordFieldView: some View {
-        FormField(title: "Enter your password",
-                  placeholder: "Enter your password",
-                  value: $viewModel.passwordViewModel.value)
-        .textContentType(.newPassword)
-        .isSecure()
-        .validationState(viewModel.passwordViewModel.validationState)
-    }
-    
-    private var submitButton: some View {
-        Button("Submit") {
-            if viewModel.canSubmit {
-                // Omitted submission code
-            } else {
-                // Omitted alert code
-            }
+    @ViewBuilder
+    private func field(_ scenario: String,
+                       vm: AnyValidationViewModel<String>) -> some View {
+        @Bindable var vm = vm
+        
+        VStack(alignment: .leading, spacing: 30) {
+            Text(scenario)
+                .font(.custom("Marker Felt", size: 24))
+                      
+              FormField(title: "Title",
+                        placeholder: "Placeholder text",
+                        value: $vm.value)
+              .autocapitalization(.none)
+                .validationState(vm.validationState)
         }
     }
 }
@@ -70,6 +51,7 @@ struct RegistrationView: View {
         .eraseToAnyValidationViewModel()
     
     let viewModel = RegistrationViewModel(emailAddressViewModel: emailAddressViewModel,
+                                          emailAddressViewModel2: emailAddressViewModel,
                                           passwordViewModel: passwordViewModel)
     
     RegistrationView(viewModel: viewModel)
