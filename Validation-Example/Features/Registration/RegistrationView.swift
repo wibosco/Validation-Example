@@ -13,23 +13,8 @@ struct RegistrationView: View {
     
     // MARK: - Views
     
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                emailAddressFieldView
-                passwordFieldView
-                
-                Spacer()
-                
-                submitButton
-            }
-            .padding()
-            .navigationTitle("Registration")
-        }
-    }
-    
     private var emailAddressFieldView: some View {
-        FormField(title: "Email Address",
+        ValidationInputField(title: "Email Address",
                   placeholder: "Enter your email address",
                   value: $viewModel.emailAddressViewModel.value)
         .textInputAutocapitalization(.never)
@@ -40,7 +25,7 @@ struct RegistrationView: View {
     }
     
     private var passwordFieldView: some View {
-        FormField(title: "Enter your password",
+        ValidationInputField(title: "Enter your password",
                   placeholder: "Enter your password",
                   value: $viewModel.passwordViewModel.value)
         .textContentType(.newPassword)
@@ -55,6 +40,21 @@ struct RegistrationView: View {
             } else {
                 // Omitted alert code
             }
+        }
+    }
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                emailAddressFieldView
+                passwordFieldView
+                
+                Spacer()
+                
+                submitButton
+            }
+            .padding()
+            .navigationTitle("Registration")
         }
     }
 }

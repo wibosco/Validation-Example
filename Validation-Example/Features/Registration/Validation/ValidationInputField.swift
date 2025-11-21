@@ -1,5 +1,5 @@
 //
-//  FormField.swift
+//  ValidationInputField.swift
 //  Validation-Example
 //
 //  Created by William Boles on 05/11/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FormField: View {
+struct ValidationInputField: View {
     private let placeholder: String
     private let title: String
     
@@ -108,6 +108,6 @@ extension View {
 // MARK: - Preview
 
 #Preview {
-    FormField(title: "Email address", placeholder: "Enter your email address", value: .constant("test@test.com"))
+    ValidationInputField(title: "Email address", placeholder: "Enter your email address", value: .constant("test@test.com"))
 }
 
