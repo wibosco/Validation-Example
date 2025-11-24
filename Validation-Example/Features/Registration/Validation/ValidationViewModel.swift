@@ -57,7 +57,8 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
             
             validationState = .valid
         } catch {
-            let errorMessage = errorMapper(error)
+//            let errorMessage = errorMapper(error)
+            let errorMessage = "Error message"
             
             validationState = .invalid(errorMessage)
         }

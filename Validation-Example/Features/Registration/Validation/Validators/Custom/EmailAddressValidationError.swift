@@ -27,7 +27,7 @@ extension EmailAddressValidationError: LocalizedError {
         case .empty:
             return "Email Address must not be empty."
         case .missingAtSign:
-            return "Error message"
+            return "Email Address must contain exactly one “@” symbol."
         case .multipleAtSigns:
             return "Email Address must not contain more than one “@”."
         case .noLocalPart:
