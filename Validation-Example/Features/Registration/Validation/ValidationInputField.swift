@@ -32,7 +32,7 @@ struct ValidationInputField: View {
         Text(title)
             .font(.subheadline)
             .fontWeight(.medium)
-            .foregroundColor(.primary)
+            .foregroundStyle(.primary)
     }
     
     @ViewBuilder
@@ -44,11 +44,10 @@ struct ValidationInputField: View {
                 Text(errorMessage)
                     .font(.caption)
             }
-            .foregroundColor(.red)
+            .foregroundStyle(.red)
         }
     }
     
-    @ViewBuilder
     private var inputView: some View {
         Group {
             if isSecure {
@@ -61,7 +60,7 @@ struct ValidationInputField: View {
         }
         .padding(12)
         .background(Color(.systemGray6))
-        .cornerRadius(8)
+        .clipShape(.rect(cornerRadius: 8))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
                 .stroke(validationState.isInvalid ? Color.red : Color.clear, lineWidth: 2)

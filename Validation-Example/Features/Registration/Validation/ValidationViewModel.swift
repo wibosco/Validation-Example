@@ -18,6 +18,7 @@ final class DefaultValidationViewModel<V: Validator>: ValidationViewModel {
     var value: V.Value {
         didSet {
             guard value != initialValue else {
+                debouncer.cancel()
                 validationState = .unchanged
 
                 return

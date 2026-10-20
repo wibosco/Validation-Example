@@ -68,4 +68,24 @@ struct DefaultDebouncerTests {
         #expect(await flag.firstRan == false)
         #expect(await flag.secondRan == true)
     }
+    
+    @Test("Given an action is scheduled on the debouncer, when the debouncer is cancelled, then that action should not be triggered")
+    func cancellingPreventsSubmittedActionFromBeingTriggered() async throws {
+        actor Flag {
+            private(set) var ran = false
+            func mark() { ran = true }
+        }
+        
+        let flag = Flag()
+        
+        sut.submit {
+            await flag.mark()
+        }
+        
+        sut.cancel()
+        
+        try await Task.sleep(for: .milliseconds(150))
+        
+        #expect(await flag.ran == false)
+    }
 }

@@ -9,6 +9,7 @@ import Foundation
 
 protocol Debouncer {
     func submit(_ action: @escaping () async -> Void)
+    func cancel()
 }
 
 final class DefaultDebouncer: Debouncer {
@@ -34,5 +35,10 @@ final class DefaultDebouncer: Debouncer {
             
             await action()
         }
+    }
+
+    func cancel() {
+        task?.cancel()
+        task = nil
     }
 }

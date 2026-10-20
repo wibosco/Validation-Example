@@ -12,11 +12,16 @@ import Foundation
 final class StubDebouncer: Debouncer {
     enum Event {
         case submit(() async -> Void)
+        case cancel
     }
     
     private(set) var events = [Event]()
     
     func submit(_ action: @escaping () async -> Void) {
         events.append(.submit(action))
+    }
+    
+    func cancel() {
+        events.append(.cancel)
     }
 }

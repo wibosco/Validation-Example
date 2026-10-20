@@ -88,6 +88,37 @@ struct DefaultValidationViewModelTests {
         
         sut.value = defaultValue
         
+        guard case .cancel = debouncer.events[0] else {
+            Issue.record("Unexpected event")
+            return
+        }
+        
+        #expect(debouncer.events.count == 1)
+        #expect(validator.events.isEmpty)
+        #expect(sut.validationState == .unchanged)
+    }
+    
+    @Test("Given `value` has been changed, when `value` is reverted to the `defaultValue`, then pending validation is cancelled and `validationState` is `unchanged`")
+    func valueIsRevertedToDefaultValue() async throws {
+        validator.validateResponse = .success(Void())
+        
+        let defaultValue = "test_value"
+        
+        let sut = DefaultValidationViewModel(initialValue: defaultValue,
+                                             validator: validator,
+                                             errorMapper: { _ in return "test_mapped_value" },
+                                             debouncer: debouncer)
+        
+        sut.value = "test_changed_value"
+        sut.value = defaultValue
+        
+        guard case .submit = debouncer.events[0],
+              case .cancel = debouncer.events[1] else {
+            Issue.record("Unexpected events")
+            return
+        }
+        
+        #expect(debouncer.events.count == 2)
         #expect(validator.events.isEmpty)
         #expect(sut.validationState == .unchanged)
     }
